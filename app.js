@@ -248,12 +248,12 @@ class EssayTimer {
     loadTheme() {
         const theme = localStorage.getItem('essayTimer_theme') || 'light';
         document.body.className = theme === 'dark' ? 'dark-mode' : '';
-        this.themeToggleBtn.textContent = theme === 'dark' ? '☀️' : '🌙';
+        this.themeToggleBtn.innerHTML = theme === 'dark' ? '<i class="fa-solid fa-sun"></i>' : '<i class="fa-solid fa-moon"></i>';
     }
     toggleTheme() {
         const isDark = document.body.classList.toggle('dark-mode');
         localStorage.setItem('essayTimer_theme', isDark ? 'dark' : 'light');
-        this.themeToggleBtn.textContent = isDark ? '☀️' : '🌙';
+        this.themeToggleBtn.innerHTML = isDark ? '<i class="fa-solid fa-sun"></i>' : '<i class="fa-solid fa-moon"></i>';
     }
     playNotification() {
         this.notificationSound.currentTime = 0;
