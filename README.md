@@ -4,6 +4,17 @@ This is a basic HTML starter project you can build on however you like. No need 
 
 _Last updated: 28 Feb 2023_
 
+## Características recientes
+
+- Selección de tema (claro, oscuro, azul o verde) desde el menú superior.
+- Posibilidad de subir una imagen para usarla como fondo y que se mantiene guardada.
+- Sonido "Start" reproducido cada vez que comienza una nueva etapa.
+
+## Librerías utilizadas
+
+- [Bootstrap 5](https://getbootstrap.com) para estilos y componentes responsivos.
+- [Font Awesome](https://fontawesome.com) para iconos.
+
 ## What's in this project?
 
 ← `README.md`: That's this file, where you can tell people what your cool website does and how you built it.
