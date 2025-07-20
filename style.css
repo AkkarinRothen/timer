@@ -98,7 +98,7 @@ textarea { width: 90%; max-width: 800px; min-height: 80px; margin-top: 10px; }
     gap: 5px;
 }
 
-/* NUEVO: Estilos para el Marcador de Sesión */
+/* Estilos para el Marcador de Sesión */
 #session-tracker {
     background-color: var(--card-bg-color);
     color: var(--text-color);
