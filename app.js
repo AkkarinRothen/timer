@@ -1,205 +1,233 @@
-const defaultTemplate = {
-    name: "Default",
-    stages: [
-        { id: 'brainstorming', label: 'Brainstorming', duration: 10 },
-        { id: 'outlining', label: 'Outlining', duration: 15 },
-        { id: 'writing-intro', label: 'Writing Introduction', duration: 10 },
-        { id: 'writing-body', label: 'Writing Body Paragraphs', duration: 45 },
-        { id: 'writing-conclusion', label: 'Writing Conclusion', duration: 10 },
-        { id: 'proofreading', label: 'Proofreading', duration: 15 },
-        { id: 'extra', label: 'Extra Time', duration: 0, isExtra: true },
-    ]
-};
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
 
-class EssayTimer {
-    constructor(containerId) {
-        this.container = document.getElementById(containerId);
-        this.currentEssayName = null;
-        this.saveTimeout = null;
-        this.isEditMode = false;
-        this.stagesBackup = null;
-
-        // DOM Elements
-        this.themeToggleBtn = document.getElementById('theme-toggle-btn');
-        this.themeSelect = document.getElementById('theme-select');
-        this.backgroundInput = document.getElementById('background-input');
-        this.clearBgBtn = document.getElementById('clear-bg-btn');
-        this.sessionTimeEl = document.getElementById('session-time');
-        this.totalTimeEl = document.getElementById('total-time');
-        this.startBtn = document.getElementById('start-btn');
-        this.pauseBtn = document.getElementById('pause-btn');
-        this.resetBtn = document.getElementById('reset-btn');
-        this.essayNameInput = document.getElementById('essay-name-input');
-        this.newEssayBtn = document.getElementById('new-essay-btn');
-        this.savedEssaysSelect = document.getElementById('saved-essays-select');
-        this.deleteEssayBtn = document.getElementById('delete-essay-btn');
-        this.templateSelect = document.getElementById('template-select');
-        this.editTemplateBtn = document.getElementById('edit-template-btn');
-        this.saveTemplateBtn = document.getElementById('save-template-btn');
-        this.cancelEditBtn = document.getElementById('cancel-edit-btn');
-        this.addStageBtn = document.getElementById('add-stage-btn');
-        this.essayNotes = document.getElementById('essay-notes');
-        this.notificationSound = document.getElementById('notification-sound');
-        this.startSound = document.getElementById('start-sound');
-
-        // State
-        this.stages = [];
-        this.stageElements = {};
-        this.currentStageIndex = 0;
-        this.isPaused = true;
-        this.isRunning = false;
-        this.intervalId = null;
-        this.timeLeftInStage = 0;
-        this.extraTime = 0;
-        this.dailySessionSeconds = 0;
-
-        this.init();
-    }
-
-    init() {
-        this.loadTemplates();
-        this.loadTemplate(this.templateSelect.value);
-        this.attachEventListeners();
-        this.populateSavedEssays();
-        this.loadAndCheckDailySession();
-        this.reset();
-        this.loadTheme();
-        this.loadBackgroundImage();
-    }
-
-    // --- NUEVAS FUNCIONALIDADES ---
-    loadAndCheckDailySession() {
-        const today = new Date().toISOString().slice(0, 10);
-        const sessionData = JSON.parse(localStorage.getItem('essayTimer_dailySession'));
-
-        if (sessionData && sessionData.date === today) {
-            this.dailySessionSeconds = sessionData.totalSeconds;
-        } else {
-            this.dailySessionSeconds = 0;
-            this.saveDailySession();
-        }
-        this.updateSessionDisplay();
-    }
-
-    saveDailySession() {
-        const today = new Date().toISOString().slice(0, 10);
-        const sessionData = { date: today, totalSeconds: this.dailySessionSeconds };
-        localStorage.setItem('essayTimer_dailySession', JSON.stringify(sessionData));
-    }
-
-    updateSessionDisplay() {
-        const hours = Math.floor(this.dailySessionSeconds / 3600).toString().padStart(2, '0');
-        const minutes = Math.floor((this.dailySessionSeconds % 3600) / 60).toString().padStart(2, '0');
-        const seconds = (this.dailySessionSeconds % 60).toString().padStart(2, '0');
-        this.sessionTimeEl.textContent = `${hours}:${minutes}:${seconds}`;
-    }
-
-    startNewCycle() {
-        this.currentStageIndex = 0;
-        this.setCurrentStage();
-        this.updateAllDisplays();
-    }
-    // --- FIN NUEVAS FUNCIONALIDADES ---
-
-    tick() {
-        if (this.isPaused) return;
-
-        // Contador de sesión diaria
-        this.dailySessionSeconds++;
-        this.updateSessionDisplay();
-        if (this.dailySessionSeconds % 5 === 0) this.saveDailySession();
-
-        const stage = this.stages[this.currentStageIndex];
-        if (!stage.isExtra) {
-            this.timeLeftInStage--;
-            if (this.timeLeftInStage < 0) {
-                this.playNotification();
-                this.currentStageIndex++;
-                this.setCurrentStage();
-            }
-        } else {
-            this.extraTime++;
-        }
-
-        this.updateAllDisplays();
-        this.debouncedSave();
-    }
-
-    setCurrentStage() {
-        const nextStageIndex = this.stages.findIndex(s => s.isExtra);
-
-        if (this.currentStageIndex === nextStageIndex) {
-            if (confirm("¡Has completado un ciclo! ¿Deseas empezar de nuevo?")) {
-                this.startNewCycle();
-                return;
-            }
-        }
-
-        if (this.currentStageIndex >= this.stages.length) {
-            this.currentStageIndex = nextStageIndex;
-        }
-
-        const stage = this.stages[this.currentStageIndex];
-        if (stage && !stage.isExtra) {
-            this.timeLeftInStage = stage.duration * 60;
-        }
-        this.playStartSound();
-    }
-
-    // Resto del archivo (funciones CRUD, render, attach, save, load) permanece igual...
-    // ...
-
-    // Tema & Fondo
-    loadTheme() {
-        const theme = localStorage.getItem('essayTimer_theme') || 'light';
-        this.setTheme(theme);
-    }
-    toggleTheme() {
-        const current = localStorage.getItem('essayTimer_theme') || 'light';
-        const next = current === 'dark' ? 'light' : 'dark';
-        this.setTheme(next);
-    }
-    setTheme(theme) {
-        document.body.className = '';
-        if (theme !== 'light') document.body.classList.add(`${theme}-mode`);
-        localStorage.setItem('essayTimer_theme', theme);
-        this.themeToggleBtn.innerHTML = theme === 'dark'
-            ? '<i class="fa-solid fa-sun"></i>'
-            : '<i class="fa-solid fa-moon"></i>';
-        if (this.themeSelect) this.themeSelect.value = theme;
-    }
-
-    loadBackgroundImage() {
-        const img = localStorage.getItem('essayTimer_bgImage');
-        if (img) document.body.style.backgroundImage = `url(${img})`;
-    }
-    handleBackgroundUpload(e) {
-        const file = e.target.files[0]; if (!file) return;
-        const reader = new FileReader();
-        reader.onload = () => {
-            const data = reader.result;
-            localStorage.setItem('essayTimer_bgImage', data);
-            document.body.style.backgroundImage = `url(${data})`;
-        };
-        reader.readAsDataURL(file);
-    }
-    clearBackgroundImage() {
-        localStorage.removeItem('essayTimer_bgImage');
-        document.body.style.backgroundImage = 'none';
-        this.backgroundInput.value = '';
-    }
-
-    playNotification() {
-        this.notificationSound.currentTime = 0;
-        this.notificationSound.play().catch(e => console.log("La reproducción automática fue bloqueada."));
-    }
-    playStartSound() {
-        if (!this.startSound) return;
-        this.startSound.currentTime = 0;
-        this.startSound.play().catch(e => console.log('La reproducción automática fue bloqueada.'));
-    }
+/* Estilos Base */
+:root {
+    --bg-color: #f4f4f9;
+    --text-color: #333;
+    --card-bg-color: #fff;
+    --border-color: #ccc;
+    --primary-color: #007bff;
+    --primary-hover: #0056b3;
+    --disabled-color: #6c757d;
+    --danger-color: #dc3545;
+    --danger-hover: #c82333;
 }
 
-document.addEventListener('DOMContentLoaded', () => {
-    new EssayTimer('timers-container');
-});
+/* Tema Oscuro */
+body.dark-mode {
+    --bg-color: #121212;
+    --text-color: #e0e0e0;
+    --card-bg-color: #1e1e1e;
+    --border-color: #444;
+    --primary-color: #0d6efd;
+    --primary-hover: #0b5ed7;
+}
+
+/* Tema Azul */
+body.blue-mode {
+    --bg-color: #e6f2ff;
+    --text-color: #034694;
+    --card-bg-color: #ffffff;
+    --border-color: #cce5ff;
+    --primary-color: #0d6efd;
+    --primary-hover: #0b5ed7;
+}
+
+/* Tema Verde */
+body.green-mode {
+    --bg-color: #e7f6e7;
+    --text-color: #065f46;
+    --card-bg-color: #ffffff;
+    --border-color: #b2dfdb;
+    --primary-color: #198754;
+    --primary-hover: #157347;
+}
+
+body {
+    font-family: 'Poppins', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    margin: 0;
+    background-color: var(--bg-color);
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
+    color: var(--text-color);
+    transition: background-color 0.3s, color 0.3s;
+}
+
+.main-container {
+    max-width: 900px;
+    margin: 20px auto;
+    padding: 0 20px;
+    text-align: center;
+}
+
+h1, h2 {
+    margin: 0.5em 0;
+}
+
+.timers-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+    margin: 20px auto;
+    max-width: 1200px;
+}
+
+.timer-container {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 15px;
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    background-color: var(--card-bg-color);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    transition: background-color 0.3s, border-color 0.3s;
+}
+
+.timer-display {
+    font-size: 2em;
+    margin-top: 10px;
+    font-weight: 500;
+}
+
+.timer-display.green { color: #28a745; }
+.timer-display.orange { color: #fd7e14; }
+.timer-display.red { color: #dc3545; }
+
+button {
+    padding: 10px 20px;
+    margin: 5px;
+    font-size: 1em;
+    cursor: pointer;
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: 5px;
+    transition: background-color 0.2s;
+}
+button:hover:not(:disabled) { background-color: var(--primary-hover); }
+button:disabled { background-color: var(--disabled-color); cursor: not-allowed; }
+
+input, select, textarea {
+    padding: 8px;
+    margin: 5px;
+    border: 1px solid var(--border-color);
+    border-radius: 5px;
+    font-size: 1em;
+    background-color: var(--card-bg-color);
+    color: var(--text-color);
+}
+textarea {
+    width: 90%;
+    max-width: 800px;
+    min-height: 80px;
+    margin-top: 10px;
+}
+
+#controls {
+    margin-top: 20px;
+}
+
+.progress-bar {
+    width: 90%;
+    background-color: #e9ecef;
+    border-radius: 5px;
+    overflow: hidden;
+    margin-top: 15px;
+    height: 12px;
+}
+.progress {
+    height: 100%;
+    background-color: #28a745;
+    width: 100%;
+    transition: width 0.5s linear, background-color 0.5s;
+}
+
+#total-time {
+    font-size: 1.5em;
+    margin-top: 20px;
+    font-weight: bold;
+}
+
+.manager-section {
+    background-color: var(--card-bg-color);
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    max-width: 800px;
+    margin: 20px auto;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+}
+
+#theme-toggle-btn {
+    position: fixed;
+    top: 15px;
+    right: 15px;
+    z-index: 100;
+}
+
+#theme-settings {
+    position: fixed;
+    top: 15px;
+    left: 15px;
+    z-index: 100;
+    display: flex;
+    gap: 5px;
+}
+
+/* Marcador de Sesión */
+#session-tracker {
+    background-color: var(--card-bg-color);
+    color: var(--text-color);
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-size: 1.1em;
+    font-weight: bold;
+    margin: 10px auto;
+    max-width: fit-content;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+/* Modo Edición */
+.delete-stage-btn {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    background-color: var(--danger-color);
+    color: white;
+    border-radius: 50%;
+    width: 25px;
+    height: 25px;
+    padding: 0;
+    line-height: 25px;
+    text-align: center;
+    font-weight: bold;
+    display: none;
+}
+.delete-stage-btn:hover { background-color: var(--danger-hover); }
+
+.edit-mode-active .delete-stage-btn { display: block; }
+
+.edit-mode-only { display: none; }
+
+.edit-mode-active #template-controls #edit-template-btn { display: none; }
+
+.edit-mode-active #template-controls .edit-mode-only,
+.edit-mode-active #add-stage-container { display: inline-block; }
+
+#add-stage-container { margin-top: 10px; }
+
+#notes-section {
+    background-color: var(--card-bg-color);
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    max-width: 800px;
+    margin: 20px auto;
+}

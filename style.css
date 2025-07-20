@@ -11,6 +11,10 @@
     --disabled-color: #6c757d;
     --danger-color: #dc3545;
     --danger-hover: #c82333;
+    /* Integración con variables de Bootstrap */
+    --bs-body-bg: var(--bg-color);
+    --bs-body-color: var(--text-color);
+    --bs-primary: var(--primary-color);
 }
 
 /* Tema Oscuro */
@@ -21,6 +25,9 @@ body.dark-mode {
     --border-color: #444;
     --primary-color: #0d6efd;
     --primary-hover: #0b5ed7;
+    --bs-body-bg: var(--bg-color);
+    --bs-body-color: var(--text-color);
+    --bs-primary: var(--primary-color);
 }
 
 /* Tema Azul */
@@ -31,6 +38,9 @@ body.blue-mode {
     --border-color: #cce5ff;
     --primary-color: #0d6efd;
     --primary-hover: #0b5ed7;
+    --bs-body-bg: var(--bg-color);
+    --bs-body-color: var(--text-color);
+    --bs-primary: var(--primary-color);
 }
 
 /* Tema Verde */
@@ -41,6 +51,9 @@ body.green-mode {
     --border-color: #b2dfdb;
     --primary-color: #198754;
     --primary-hover: #157347;
+    --bs-body-bg: var(--bg-color);
+    --bs-body-color: var(--text-color);
+    --bs-primary: var(--primary-color);
 }
 
 body {
@@ -119,6 +132,7 @@ input, select, textarea {
     background-color: var(--card-bg-color);
     color: var(--text-color);
 }
+
 textarea {
     width: 90%;
     max-width: 800px;
