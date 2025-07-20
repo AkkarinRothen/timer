@@ -13,6 +13,17 @@
     <button id="theme-toggle-btn" class="btn btn-secondary">
         <i class="fa-solid fa-moon"></i>
     </button>
+    <!-- Theme settings panel -->
+    <div id="theme-settings" class="theme-settings">
+        <select id="theme-select" class="form-select form-select-sm">
+            <option value="light">Claro</option>
+            <option value="dark">Oscuro</option>
+            <option value="blue">Azul</option>
+            <option value="green">Verde</option>
+        </select>
+        <input type="file" id="background-input" class="form-control form-control-sm" accept="image/*">
+        <button id="clear-bg-btn" class="btn btn-sm btn-outline-secondary">Quitar Fondo</button>
+    </div>
 
     <div class="container main-container">
         <h1>Advanced Essay Timer 📝</h1>
@@ -78,6 +89,7 @@
         </div>
 
         <audio id="notification-sound" src="https://www.soundjay.com/buttons/sounds/button-16.mp3" preload="auto"></audio>
+        <audio id="start-sound" src="Sounds/Start.mp3" preload="auto"></audio>
     </div>
 
     <script src="app.js"></script>
