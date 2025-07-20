@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Advanced Essay Timer</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <button id="theme-toggle-btn">🌙</button>
+
+    <h1>Advanced Essay Timer 📝</h1>
+
+    <div id="session-tracker">
+        Tiempo de Foco Hoy: <span id="session-time">00:00:00</span>
+    </div>
+
+    <div id="essay-manager" class="manager-section">
+        <input type="text" id="essay-name-input" placeholder="Nombre del Ensayo">
+        <button id="new-essay-btn">Empezar Nuevo</button>
+        <span>O</span>
+        <select id="saved-essays-select">
+            <option value="">Cargar Ensayo Guardado</option>
+        </select>
+        <button id="delete-essay-btn" disabled>Borrar</button>
+    </div>
+
+    <div id="template-manager" class="manager-section">
+        <select id="template-select">
+            <option value="default">Plantilla por Defecto</option>
+        </select>
+        <div id="template-controls">
+            <button id="edit-template-btn">Editar Plantilla</button>
+            <button id="save-template-btn" class="edit-mode-only">Guardar Cambios</button>
+            <button id="cancel-edit-btn" class="edit-mode-only">Cancelar</button>
+        </div>
+    </div>
+
+    <div id="notes-section">
+        <h2>Notas del Ensayo</h2>
+        <textarea id="essay-notes" placeholder="Escribe tus ideas, enlaces o recordatorios aquí..."></textarea>
+    </div>
+
+    <div id="total-time">Tiempo Total: 00:00</div>
+
+    <div class="timers-grid" id="timers-container">
+        </div>
+    
+    <div id="add-stage-container" class="edit-mode-only">
+        <button id="add-stage-btn">+ Añadir Etapa</button>
+    </div>
+
+    <div id="controls">
+        <button id="start-btn" disabled>Empezar</button>
+        <button id="pause-btn" disabled>Pausar</button>
+        <button id="reset-btn" disabled>Reiniciar</button>
+    </div>
+    
+    <audio id="notification-sound" src="https://www.soundjay.com/buttons/sounds/button-16.mp3" preload="auto"></audio>
+
+    <script src="app.js"></script>
+</body>
+</html>
