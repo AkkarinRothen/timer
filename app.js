@@ -21,6 +21,9 @@ class EssayTimer {
 
         // DOM Elements
         this.themeToggleBtn = document.getElementById('theme-toggle-btn');
+        this.themeSelect = document.getElementById('theme-select');
+        this.backgroundInput = document.getElementById('background-input');
+        this.clearBgBtn = document.getElementById('clear-bg-btn');
         this.sessionTimeEl = document.getElementById('session-time'); // NUEVO
         this.totalTimeEl = document.getElementById('total-time');
         // ... (resto de elementos DOM sin cambios)
@@ -38,6 +41,7 @@ class EssayTimer {
         this.addStageBtn = document.getElementById('add-stage-btn');
         this.essayNotes = document.getElementById('essay-notes');
         this.notificationSound = document.getElementById('notification-sound');
+        this.startSound = document.getElementById('start-sound');
 
         // State
         this.stages = [];
@@ -61,6 +65,7 @@ class EssayTimer {
         this.loadAndCheckDailySession(); // NUEVO
         this.reset();
         this.loadTheme();
+        this.loadBackgroundImage();
     }
     
     // --- NUEVAS FUNCIONALIDADES ---
@@ -146,6 +151,7 @@ class EssayTimer {
         if (stage && !stage.isExtra) {
             this.timeLeftInStage = stage.duration * 60;
         }
+        this.playStartSound();
     }
 
     // El resto del archivo app.js permanece igual...
@@ -226,6 +232,9 @@ class EssayTimer {
     }
     attachEventListeners() {
         this.themeToggleBtn.addEventListener('click', () => this.toggleTheme());
+        this.themeSelect.addEventListener('change', () => this.setTheme(this.themeSelect.value));
+        this.backgroundInput.addEventListener('change', (e) => this.handleBackgroundUpload(e));
+        this.clearBgBtn.addEventListener('click', () => this.clearBackgroundImage());
         this.startBtn.addEventListener('click', () => this.start());
         this.pauseBtn.addEventListener('click', () => this.pause());
         this.resetBtn.addEventListener('click', () => this.reset(true));
@@ -247,17 +256,50 @@ class EssayTimer {
     }
     loadTheme() {
         const theme = localStorage.getItem('essayTimer_theme') || 'light';
-        document.body.className = theme === 'dark' ? 'dark-mode' : '';
-        this.themeToggleBtn.textContent = theme === 'dark' ? '☀️' : '🌙';
+        this.setTheme(theme);
     }
     toggleTheme() {
-        const isDark = document.body.classList.toggle('dark-mode');
-        localStorage.setItem('essayTimer_theme', isDark ? 'dark' : 'light');
-        this.themeToggleBtn.textContent = isDark ? '☀️' : '🌙';
+        const current = localStorage.getItem('essayTimer_theme') || 'light';
+        const next = current === 'dark' ? 'light' : 'dark';
+        this.setTheme(next);
+    }
+    setTheme(theme) {
+        document.body.classList.remove('dark-mode', 'blue-mode', 'green-mode');
+        if (theme !== 'light') document.body.classList.add(`${theme}-mode`);
+        localStorage.setItem('essayTimer_theme', theme);
+        this.themeToggleBtn.innerHTML = theme === 'dark' ? '<i class="fa-solid fa-sun"></i>' : '<i class="fa-solid fa-moon"></i>';
+        if (this.themeSelect) this.themeSelect.value = theme;
+    }
+    loadBackgroundImage() {
+        const img = localStorage.getItem('essayTimer_bgImage');
+        if (img) {
+            document.body.style.backgroundImage = `url(${img})`;
+        }
+    }
+    handleBackgroundUpload(e) {
+        const file = e.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = () => {
+            const data = reader.result;
+            localStorage.setItem('essayTimer_bgImage', data);
+            document.body.style.backgroundImage = `url(${data})`;
+        };
+        reader.readAsDataURL(file);
+    }
+    clearBackgroundImage() {
+        localStorage.removeItem('essayTimer_bgImage');
+        document.body.style.backgroundImage = 'none';
+        this.backgroundInput.value = '';
     }
     playNotification() {
         this.notificationSound.currentTime = 0;
         this.notificationSound.play().catch(e => console.log("La reproducción automática fue bloqueada."));
+    }
+    playStartSound() {
+        if (!this.startSound) return;
+        this.startSound.currentTime = 0;
+        this.startSound.play().catch(e => console.log('La reproducción automática fue bloqueada.'));
     }
     loadTemplates() {
         let templates = JSON.parse(localStorage.getItem('essayTimer_templates')) || {};
