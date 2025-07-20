@@ -31,7 +31,7 @@ body {
     transition: background-color 0.3s, color 0.3s;
 }
 
-.container {
+.main-container {
     max-width: 900px;
     margin: 20px auto;
     padding: 0 20px;
