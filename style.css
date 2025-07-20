@@ -30,7 +30,6 @@ body {
     color: var(--text-color);
     transition: background-color 0.3s, color 0.3s;
 }
-
 .main-container {
     max-width: 900px;
     margin: 20px auto;
