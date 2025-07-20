@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
+
 /* Estilos Base (sin cambios) */
 :root {
     --bg-color: #f4f4f9;
@@ -9,6 +11,9 @@
     --disabled-color: #6c757d;
     --danger-color: #dc3545;
     --danger-hover: #c82333;
+    --bs-body-bg: var(--bg-color);
+    --bs-body-color: var(--text-color);
+    --bs-primary: var(--primary-color);
 }
 
 /* Tema Oscuro (sin cambios) */
@@ -19,15 +24,51 @@ body.dark-mode {
     --border-color: #444;
     --primary-color: #0d6efd;
     --primary-hover: #0b5ed7;
+    --bs-body-bg: var(--bg-color);
+    --bs-body-color: var(--text-color);
+    --bs-primary: var(--primary-color);
 }
 
-body { 
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; 
-    margin: 20px; 
-    text-align: center; 
-    background-color: var(--bg-color); 
+body.blue-mode {
+    --bg-color: #e6f2ff;
+    --text-color: #034694;
+    --card-bg-color: #ffffff;
+    --border-color: #cce5ff;
+    --primary-color: #0d6efd;
+    --primary-hover: #0b5ed7;
+    --bs-body-bg: var(--bg-color);
+    --bs-body-color: var(--text-color);
+    --bs-primary: var(--primary-color);
+}
+
+body.green-mode {
+    --bg-color: #e7f6e7;
+    --text-color: #065f46;
+    --card-bg-color: #ffffff;
+    --border-color: #b2dfdb;
+    --primary-color: #198754;
+    --primary-hover: #157347;
+    --bs-body-bg: var(--bg-color);
+    --bs-body-color: var(--text-color);
+    --bs-primary: var(--primary-color);
+}
+
+body {
+    font-family: 'Poppins', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    margin: 0;
+    background-color: var(--bg-color);
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
     color: var(--text-color);
     transition: background-color 0.3s, color 0.3s;
+}
+
+.main-container {
+    max-width: 900px;
+    margin: 20px auto;
+    padding: 0 20px;
+    text-align: center;
 }
 
 h1, h2 { margin: 0.5em 0; }
@@ -48,6 +89,14 @@ textarea { width: 90%; max-width: 800px; min-height: 80px; margin-top: 10px; }
 #total-time { font-size: 1.5em; margin-top: 20px; font-weight: bold; }
 .manager-section { background-color: var(--card-bg-color); padding: 15px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); max-width: 800px; margin: 20px auto; display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 10px; }
 #theme-toggle-btn { position: fixed; top: 15px; right: 15px; z-index: 100; }
+#theme-settings {
+    position: fixed;
+    top: 15px;
+    left: 15px;
+    z-index: 100;
+    display: flex;
+    gap: 5px;
+}
 
 /* NUEVO: Estilos para el Marcador de Sesión */
 #session-tracker {
@@ -101,4 +150,13 @@ textarea { width: 90%; max-width: 800px; min-height: 80px; margin-top: 10px; }
 
 #add-stage-container {
     margin-top: 10px;
+}
+
+#notes-section {
+    background-color: var(--card-bg-color);
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    max-width: 800px;
+    margin: 20px auto;
 }
