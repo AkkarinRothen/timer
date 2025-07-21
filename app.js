@@ -24,7 +24,7 @@ class EssayTimer {
         this.themeSelect = document.getElementById('theme-select');
         this.backgroundInput = document.getElementById('background-input');
         this.clearBgBtn = document.getElementById('clear-bg-btn');
-        this.sessionTimeEl = document.getElementById('session-time');
+        this.sessionTimeEl = document.getElementById('session-time'); // NUEVO
         this.totalTimeEl = document.getElementById('total-time');
         // ... (resto de elementos DOM sin cambios)
         this.startBtn = document.getElementById('start-btn');
@@ -52,7 +52,7 @@ class EssayTimer {
         this.intervalId = null;
         this.timeLeftInStage = 0;
         this.extraTime = 0;
-        this.dailySessionSeconds = 0;
+        this.dailySessionSeconds = 0; // NUEVO
 
         this.init();
     }
@@ -62,7 +62,7 @@ class EssayTimer {
         this.loadTemplate(this.templateSelect.value);
         this.attachEventListeners();
         this.populateSavedEssays();
-        this.loadAndCheckDailySession();
+        this.loadAndCheckDailySession(); // NUEVO
         this.reset();
         this.loadTheme();
         this.loadBackgroundImage();
@@ -135,7 +135,7 @@ class EssayTimer {
     setCurrentStage() {
         const nextStageIndex = this.stages.findIndex(stage => stage.isExtra);
 
-        // Lógica para el ciclo
+        // MODIFICADO: Lógica para el ciclo
         if (this.currentStageIndex === nextStageIndex) {
             if (confirm("¡Has completado un ciclo! ¿Deseas empezar de nuevo?")) {
                 this.startNewCycle();
@@ -247,7 +247,7 @@ class EssayTimer {
         this.cancelEditBtn.addEventListener('click', () => this.cancelEdit());
         this.addStageBtn.addEventListener('click', () => this.addStage());
         this.essayNotes.addEventListener('input', () => this.debouncedSave());
-        // Guardar sesión al cerrar la página
+        // MODIFICADO: Guardar sesión al cerrar la página
         window.addEventListener('beforeunload', () => this.saveDailySession());
     }
     debouncedSave() {
@@ -264,7 +264,7 @@ class EssayTimer {
         this.setTheme(next);
     }
     setTheme(theme) {
-        document.body.classList.remove('dark-mode', 'blue-mode', 'green-mode');
+        document.body.className = '';
         if (theme !== 'light') document.body.classList.add(`${theme}-mode`);
         localStorage.setItem('essayTimer_theme', theme);
         this.themeToggleBtn.innerHTML = theme === 'dark' ? '<i class="fa-solid fa-sun"></i>' : '<i class="fa-solid fa-moon"></i>';
