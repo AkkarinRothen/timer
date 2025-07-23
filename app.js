@@ -11,6 +11,21 @@ const defaultTemplate = {
     ]
 };
 
+const pomodoro30Template = {
+    name: 'Pomodoro 30/5',
+    stages: [
+        { id: 'pomodoro-1', label: 'Pomodoro 1', duration: 30, isPomodoro: true },
+        { id: 'break-1', label: 'Descanso', duration: 5 },
+        { id: 'pomodoro-2', label: 'Pomodoro 2', duration: 30, isPomodoro: true },
+        { id: 'break-2', label: 'Descanso', duration: 5 },
+        { id: 'pomodoro-3', label: 'Pomodoro 3', duration: 30, isPomodoro: true },
+        { id: 'break-3', label: 'Descanso', duration: 5 },
+        { id: 'pomodoro-4', label: 'Pomodoro 4', duration: 30, isPomodoro: true },
+        { id: 'long-break', label: 'Descanso Largo', duration: 15 },
+        { id: 'extra', label: 'Extra Time', duration: 0, isExtra: true }
+    ]
+};
+
 class EssayTimer {
     constructor(containerId) {
         this.container = document.getElementById(containerId);
@@ -26,6 +41,7 @@ class EssayTimer {
         this.clearBgBtn = document.getElementById('clear-bg-btn');
         this.sessionTimeEl = document.getElementById('session-time'); // NUEVO
         this.totalTimeEl = document.getElementById('total-time');
+        this.pomodoroCountEl = document.getElementById('pomodoro-count');
         // ... (resto de elementos DOM sin cambios)
         this.startBtn = document.getElementById('start-btn');
         this.pauseBtn = document.getElementById('pause-btn');
@@ -53,6 +69,7 @@ class EssayTimer {
         this.timeLeftInStage = 0;
         this.extraTime = 0;
         this.dailySessionSeconds = 0; // NUEVO
+        this.pomodorosCompleted = 0;
 
         this.init();
     }
@@ -64,6 +81,7 @@ class EssayTimer {
         this.populateSavedEssays();
         this.loadAndCheckDailySession(); // NUEVO
         this.reset();
+        this.updatePomodoroDisplay();
         this.loadTheme();
         this.loadBackgroundImage();
     }
@@ -99,10 +117,31 @@ class EssayTimer {
         this.sessionTimeEl.textContent = `${hours}:${minutes}:${seconds}`;
     }
 
+    updatePomodoroDisplay() {
+        if (this.pomodoroCountEl) {
+            this.pomodoroCountEl.textContent = this.pomodorosCompleted;
+        }
+    }
+
+    updatePageTitle() {
+        if (!this.isRunning) {
+            document.title = 'Advanced Essay Timer';
+            return;
+        }
+        const stage = this.stages[this.currentStageIndex];
+        if (!stage) return;
+        if (stage.label.toLowerCase().includes('descanso')) {
+            document.title = `${stage.label} - ${this.formatTime(this.timeLeftInStage)}`;
+        } else {
+            document.title = `${stage.label} - ${this.formatTime(this.timeLeftInStage)}`;
+        }
+    }
+
     startNewCycle() {
         this.currentStageIndex = 0;
         this.setCurrentStage();
         this.updateAllDisplays();
+        this.updatePageTitle();
     }
     // --- FIN NUEVAS FUNCIONALIDADES ---
 
@@ -120,6 +159,10 @@ class EssayTimer {
         if (!stage.isExtra) {
             this.timeLeftInStage--;
             if (this.timeLeftInStage < 0) {
+                if (stage.isPomodoro) {
+                    this.pomodorosCompleted++;
+                    this.updatePomodoroDisplay();
+                }
                 this.playNotification();
                 this.currentStageIndex++;
                 this.setCurrentStage(); // setCurrentStage ahora contiene la lógica cíclica
@@ -127,8 +170,9 @@ class EssayTimer {
         } else {
             this.extraTime++;
         }
-        
+
         this.updateAllDisplays();
+        this.updatePageTitle();
         this.debouncedSave();
     }
 
@@ -152,6 +196,7 @@ class EssayTimer {
             this.timeLeftInStage = stage.duration * 60;
         }
         this.playStartSound();
+        this.updatePageTitle();
     }
 
     // El resto del archivo app.js permanece igual...
@@ -304,7 +349,10 @@ class EssayTimer {
     loadTemplates() {
         let templates = JSON.parse(localStorage.getItem('essayTimer_templates')) || {};
         if (Object.keys(templates).length === 0) {
-            templates = { default: defaultTemplate };
+            templates = { default: defaultTemplate, pomodoro30: pomodoro30Template };
+            localStorage.setItem('essayTimer_templates', JSON.stringify(templates));
+        } else if (!templates.pomodoro30) {
+            templates.pomodoro30 = pomodoro30Template;
             localStorage.setItem('essayTimer_templates', JSON.stringify(templates));
         }
         this.templateSelect.innerHTML = '';
@@ -474,6 +522,7 @@ class EssayTimer {
         this.startBtn.disabled = true;
         this.pauseBtn.disabled = false;
         this.resetBtn.disabled = false;
+        this.updatePageTitle();
     }
     pause() {
         this.isPaused = true;
@@ -481,6 +530,7 @@ class EssayTimer {
         this.pauseBtn.disabled = true;
         this.saveState();
         this.saveDailySession(); // Guardar sesión al pausar
+        this.updatePageTitle();
     }
     reset(fullReset = false) {
         clearInterval(this.intervalId);
@@ -491,11 +541,14 @@ class EssayTimer {
         this.intervalId = null;
         if(fullReset) {
             this.essayNotes.value = '';
+            this.pomodorosCompleted = 0;
+            this.updatePomodoroDisplay();
         }
         if (fullReset) {
             this.loadTemplate(this.templateSelect.value);
         }
         this.updateAllDisplays();
+        this.updatePageTitle();
         this.startBtn.textContent = 'Empezar';
         this.startBtn.disabled = !this.currentEssayName;
         this.pauseBtn.disabled = true;
