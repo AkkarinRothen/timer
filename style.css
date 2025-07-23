@@ -61,7 +61,7 @@ body {
 
 .main-container {
   max-width: 900px;
-  margin: 20px auto;
+  margin: 10px auto;
   padding: 0 20px;
   text-align: center;
 }
@@ -74,8 +74,8 @@ h1, h2 { margin: 0.5em 0; }
 .timers-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 20px;
-  margin: 20px auto;
+  gap: 10px;
+  margin: 10px auto;
   max-width: 1200px;
 }
 
@@ -134,7 +134,7 @@ textarea {
   margin-top: 10px;
 }
 
-#controls { margin-top: 20px; }
+#controls { margin-top: 10px; }
 
 /* ==========================
    PROGRESS BAR
@@ -169,7 +169,7 @@ textarea {
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0,0,0,0.1);
   max-width: 800px;
-  margin: 20px auto;
+  margin: 10px auto;
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
