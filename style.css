@@ -172,18 +172,29 @@ textarea {
     z-index: 101;
 }
 
+#settings-toggle-btn {
+    position: fixed;
+    top: 15px;
+    left: 55px;
+    z-index: 101;
+}
+
 #theme-settings {
     position: fixed;
     top: 60px;
     left: 15px;
     z-index: 100;
-    display: flex;
+    display: none;
     flex-direction: column;
     gap: 10px;
     background-color: var(--card-bg-color);
     padding: 10px;
     border-radius: 0 8px 8px 0;
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+#theme-settings.visible {
+    display: flex;
 }
 
 /* Marcador de Sesión */
@@ -259,6 +270,10 @@ textarea {
     #theme-settings {
         top: 60px;
         left: 10px;
+        display: none;
+    }
+    #theme-settings.visible {
+        display: flex;
     }
     #session-tracker,
     #pomodoro-counter {

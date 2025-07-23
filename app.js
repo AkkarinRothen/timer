@@ -36,6 +36,8 @@ class EssayTimer {
 
         // DOM Elements
         this.themeToggleBtn = document.getElementById('theme-toggle-btn');
+        this.settingsToggleBtn = document.getElementById('settings-toggle-btn');
+        this.themeSettings = document.getElementById('theme-settings');
         this.themeSelect = document.getElementById('theme-select');
         this.backgroundInput = document.getElementById('background-input');
         this.clearBgBtn = document.getElementById('clear-bg-btn');
@@ -277,6 +279,11 @@ class EssayTimer {
     }
     attachEventListeners() {
         this.themeToggleBtn.addEventListener('click', () => this.toggleTheme());
+        if (this.settingsToggleBtn) {
+            this.settingsToggleBtn.addEventListener('click', () => {
+                this.themeSettings.classList.toggle('visible');
+            });
+        }
         this.themeSelect.addEventListener('change', () => this.setTheme(this.themeSelect.value));
         this.backgroundInput.addEventListener('change', (e) => this.handleBackgroundUpload(e));
         this.clearBgBtn.addEventListener('click', () => this.clearBackgroundImage());
