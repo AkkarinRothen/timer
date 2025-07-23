@@ -54,6 +54,12 @@
         <button id="theme-toggle-btn" class="btn btn-secondary">
             <i class="fa-solid fa-moon"></i>
         </button>
+        <button id="settings-toggle-btn" class="btn btn-secondary">
+            <i class="fa-solid fa-gear"></i>
+        </button>
+        <button id="assistant-toggle-btn" class="btn btn-secondary" title="Mostrar/Ocultar Asistente">
+            <i class="fa-solid fa-comments"></i>
+        </button>
         <div id="theme-settings" class="theme-settings">
             <select id="theme-select" class="form-select form-select-sm">
                 <option value="light">Claro</option>
@@ -63,7 +69,18 @@
             </select>
             <input type="file" id="background-input" class="form-control form-control-sm" accept="image/*">
             <button id="clear-bg-btn" class="btn btn-sm btn-outline-secondary">Quitar Fondo</button>
-        </div>
+                        </div>
+                        <div id="asistente-container">
+                            <div id="dialogo-burbuja">
+                                <span id="cerrar-asistente" title="Cerrar">×</span>
+                                <p id="texto-dialogo">¡Listo para empezar!</p>
+                            </div>
+                            <img id="personaje-img" src="images/Chicken 1.png" alt="Personaje Asistente">
+                            <div id="assist-size-controls">
+                                <span id="assist-size-down">&#8722;</span>
+                                <span id="assist-size-up">&#43;</span>
+                            </div>
+                        </div>
 
         <h1>Advanced Essay Timer 📝</h1>
 
@@ -197,6 +214,7 @@
 			<script src="assets/js/util.js"></script>
                        <script src="assets/js/main.js"></script>
                        <script src="../app.js"></script>
+                       <script src="../assistant.js"></script>
                        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
 	</body>
