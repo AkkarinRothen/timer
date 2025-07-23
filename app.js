@@ -131,9 +131,9 @@ class EssayTimer {
         const stage = this.stages[this.currentStageIndex];
         if (!stage) return;
         if (stage.label.toLowerCase().includes('descanso')) {
-            document.title = `${stage.label} - ${this.formatTime(this.timeLeftInStage)}`;
+            document.title = `${this.formatTime(this.timeLeftInStage)} - ${stage.label}`;
         } else {
-            document.title = `${stage.label} - ${this.formatTime(this.timeLeftInStage)}`;
+            document.title = `${this.formatTime(this.timeLeftInStage)} - ${stage.label}`;
         }
     }
 
