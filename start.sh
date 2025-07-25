@@ -6,6 +6,3 @@ cd "$DIR"
 
 # Launch the built‑in Python server
 python3 -m http.server "$PORT"
-
-chmod +x start.sh
-./start.sh
