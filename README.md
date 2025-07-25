@@ -9,6 +9,12 @@ _Last updated: 28 Feb 2023_
 - Selección de tema (claro, oscuro, azul o verde) desde el menú superior.
 - Posibilidad de subir una imagen para usarla como fondo y que se mantiene guardada.
 - Sonido "Start" reproducido cada vez que comienza una nueva etapa.
+- Cuando la pestaña del navegador queda oculta, un pequeño overlay muestra la etapa actual y el tiempo restante.
+  Si el asistente estaba oculto, se mostrará temporalmente para anunciar la etapa.
+
+## Overlay flotante
+
+Al cambiar de pestaña, el navegador oculta la página y puede ser fácil perder el progreso. Ahora se crea un contenedor flotante que se muestra mientras la página está oculta e indica en todo momento la etapa actual del temporizador y cuánto tiempo queda. Al volver a la pestaña, el overlay desaparece automáticamente.
 
 ## Librerías utilizadas
 

@@ -56,6 +56,18 @@ function asistenteCambiarFase(nuevaFase) {
   asistenteIntervaloDialogo = setInterval(asistenteMostrarSiguienteDialogo, 8000);
 }
 
+// Mostrar mensaje personalizado inmediatamente
+function asistenteDecir(mensaje) {
+  if (!asistenteContainer) return;
+  asistenteContainer.style.display = 'flex';
+  if (asistenteToggleBtn) asistenteToggleBtn.style.display = 'none';
+  clearInterval(asistenteIntervaloDialogo);
+  asistenteTextoDialogo.innerText = mensaje;
+  asistenteBurbuja.style.opacity = '1';
+}
+
+window.asistenteDecir = asistenteDecir;
+
 // Drag helpers
 const startDrag = (clientX, clientY) => {
   isDragging = true;

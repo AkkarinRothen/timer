@@ -86,6 +86,7 @@ class EssayTimer {
         this.updatePomodoroDisplay();
         this.loadTheme();
         this.loadBackgroundImage();
+        this.setupVisibilityHandler();
     }
     
     // --- NUEVAS FUNCIONALIDADES ---
@@ -343,6 +344,53 @@ class EssayTimer {
         localStorage.removeItem('essayTimer_bgImage');
         document.body.style.backgroundImage = 'none';
         this.backgroundInput.value = '';
+    }
+
+    setupVisibilityHandler() {
+        const overlay = document.getElementById('floating-stage');
+        if (!overlay) return;
+
+        const asistenteContainer = document.getElementById('asistente-container');
+        const assistantToggleBtn = document.getElementById('assistant-toggle-btn');
+        let interval;
+        let assistantWasHidden = false;
+
+        const updateOverlay = () => {
+            const stage = this.stages[this.currentStageIndex];
+            if (!stage) return;
+            const time = stage.isExtra ? this.extraTime : this.timeLeftInStage;
+            overlay.textContent = `${stage.label}: ${this.formatTime(time)}`;
+        };
+
+        document.addEventListener('visibilitychange', () => {
+            if (document.hidden) {
+                updateOverlay();
+                overlay.style.display = 'block';
+                clearInterval(interval);
+                interval = setInterval(updateOverlay, 1000);
+
+                if (asistenteContainer && asistenteContainer.style.display === 'none') {
+                    assistantWasHidden = true;
+                    asistenteContainer.style.display = 'flex';
+                    if (assistantToggleBtn) assistantToggleBtn.style.display = 'none';
+                } else {
+                    assistantWasHidden = false;
+                }
+
+                const stage = this.stages[this.currentStageIndex];
+                if (window.asistenteDecir && stage) {
+                    window.asistenteDecir(`Etapa actual: ${stage.label}`);
+                }
+            } else {
+                overlay.style.display = 'none';
+                clearInterval(interval);
+                if (assistantWasHidden && asistenteContainer) {
+                    asistenteContainer.style.display = 'none';
+                    if (assistantToggleBtn) assistantToggleBtn.style.display = 'block';
+                }
+                assistantWasHidden = false;
+            }
+        });
     }
     playNotification() {
         this.notificationSound.currentTime = 0;
