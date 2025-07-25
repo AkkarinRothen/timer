@@ -284,6 +284,19 @@ textarea {
   cursor: move;
 }
 
+#floating-stage {
+  position: fixed;
+  bottom: 15px;
+  left: 15px;
+  padding: 8px 12px;
+  background: rgba(0,0,0,0.8);
+  color: #fff;
+  border-radius: 6px;
+  font-size: 14px;
+  z-index: 10001;
+  display: none;
+}
+
 #personaje-img {
   height: 280px;
   animation: asistente-bob-and-sway 6s ease-in-out infinite;
