@@ -632,9 +632,16 @@ class EssayTimer {
 
 let appInstance;
 
+function updateUserNav(nickname) {
+    const link = document.getElementById('login-menu-link');
+    if (!link) return;
+    link.textContent = nickname ? `Usuario: ${nickname}` : 'Ingresar';
+}
+
 function startApp(nickname) {
     db = new LocalDB('essayTimer_' + nickname);
     appInstance = new EssayTimer('timers-container');
+    updateUserNav(nickname);
 }
 
 function showLogin() {
@@ -648,16 +655,22 @@ function showLogin() {
         overlay.classList.add('hidden');
         startApp(nick);
     };
+    input.value = '';
     overlay.classList.remove('hidden');
     btn.addEventListener('click', tryStart);
     input.addEventListener('keyup', (e) => { if (e.key === 'Enter') tryStart(); });
 }
 
 document.addEventListener('DOMContentLoaded', () => {
+    const loginLink = document.getElementById('login-menu-link');
+    if (loginLink) {
+        loginLink.addEventListener('click', (e) => { e.preventDefault(); showLogin(); });
+    }
     const stored = localStorage.getItem('currentNickname');
     if (stored) {
         startApp(stored);
     } else {
+        updateUserNav(null);
         showLogin();
     }
 });
