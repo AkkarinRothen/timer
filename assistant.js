@@ -4,13 +4,21 @@ const asistenteDialogos = {
     "¡Tú puedes con esto! La concentración es la clave.",
     "Sigue así, cada minuto cuenta.",
     "Un pequeño esfuerzo ahora es un gran logro mañana. ¡Vamos!",
-    "La constancia vence al talento. ¡No te rindas!"
+    "La constancia vence al talento. ¡No te rindas!",
+    "Respira profundo y enfócate en la tarea que tienes delante.",
+    "Cada idea cuenta, anótala para no olvidarla más tarde.",
+    "Recuerda revisar tus apuntes si te atascas.",
+    "Mantén una postura cómoda para que tu mente se mantenga despierta."
   ],
   descanso: [
     "¡Buen trabajo! Es hora de un merecido descanso.",
     "Estira las piernas, mira por la ventana y relájate.",
     "Toma un poco de agua, tu cerebro te lo agradecerá.",
-    "Has trabajado duro. ¡Disfruta tu pausa!"
+    "Has trabajado duro. ¡Disfruta tu pausa!",
+    "Un pequeño paseo despejará tu mente para el siguiente bloque.",
+    "Respira hondo y deja que los hombros se relajen.",
+    "Cambia de postura para que circule la energía.",
+    "Dedica un minuto a agradecer tu avance. ¡Bien hecho!"
   ]
 };
 
@@ -32,17 +40,31 @@ let dragOffsetY    = 0;
 let asistenteFaseActual     = 'estudio';
 let asistenteDialogoActual  = 0;
 let asistenteIntervaloDialogo;
+let typingInterval;
+
+function typeMessage(text) {
+  clearInterval(typingInterval);
+  asistenteTextoDialogo.textContent = '';
+  let i = 0;
+  typingInterval = setInterval(() => {
+    asistenteTextoDialogo.textContent += text.charAt(i);
+    i++;
+    if (i >= text.length) clearInterval(typingInterval);
+  }, 40);
+}
 
 function asistenteMostrarSiguienteDialogo() {
   const listaDialogos = asistenteDialogos[asistenteFaseActual];
   asistenteDialogoActual = (asistenteDialogoActual + 1) % listaDialogos.length;
 
   asistenteBurbuja.style.opacity = '0';
-
+  asistenteBurbuja.classList.remove('dialog-pop');
+  void asistenteBurbuja.offsetWidth;
   setTimeout(() => {
-    asistenteTextoDialogo.innerText = listaDialogos[asistenteDialogoActual];
+    typeMessage(listaDialogos[asistenteDialogoActual]);
     asistenteBurbuja.style.opacity = '1';
-  }, 400);
+    asistenteBurbuja.classList.add('dialog-pop');
+  }, 200);
 }
 
 function asistenteCambiarFase(nuevaFase) {
@@ -62,8 +84,11 @@ function asistenteDecir(mensaje) {
   asistenteContainer.style.display = 'flex';
   if (asistenteToggleBtn) asistenteToggleBtn.style.display = 'none';
   clearInterval(asistenteIntervaloDialogo);
-  asistenteTextoDialogo.innerText = mensaje;
+  asistenteBurbuja.classList.remove('dialog-pop');
+  void asistenteBurbuja.offsetWidth;
+  typeMessage(mensaje);
   asistenteBurbuja.style.opacity = '1';
+  asistenteBurbuja.classList.add('dialog-pop');
 }
 
 window.asistenteDecir = asistenteDecir;

@@ -336,6 +336,9 @@ textarea {
   transform: translateY(10px);
   animation: asistente-pulse 3s ease-in-out infinite;
 }
+#dialogo-burbuja.dialog-pop {
+  animation: asistente-pop 0.4s ease-out, asistente-pulse 3s ease-in-out infinite;
+}
 #dialogo-burbuja::after {
   content: '';
   position: absolute;
@@ -403,6 +406,11 @@ textarea {
 @keyframes asistente-fade-in {
   from { opacity: 0; transform: translateY(20px); }
   to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes asistente-pop {
+  0%   { transform: scale(0.8) translateY(10px); opacity: 0; }
+  100% { transform: scale(1) translateY(0); opacity: 1; }
 }
 
 /* ==========================
