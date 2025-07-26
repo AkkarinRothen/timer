@@ -13,7 +13,14 @@ class LocalDB {
 
   get(key) {
     const item = localStorage.getItem(this._key(key));
-    return item ? JSON.parse(item) : null;
+    if (!item) return null;
+    try {
+      return JSON.parse(item);
+    } catch (e) {
+      console.warn(`LocalDB: invalid data for ${key}, clearing`);
+      localStorage.removeItem(this._key(key));
+      return null;
+    }
   }
 
   remove(key) {
