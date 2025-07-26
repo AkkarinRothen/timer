@@ -64,6 +64,7 @@ class EssayTimer {
         // State
         this.stages = [];
         this.stageElements = {};
+        this.previousStageId = null;
         this.currentStageIndex = 0;
         this.isPaused = true;
         this.isRunning = false;
@@ -198,6 +199,7 @@ class EssayTimer {
         if (stage && !stage.isExtra) {
             this.timeLeftInStage = stage.duration * 60;
         }
+        this.highlightCurrentStage();
         this.playStartSound();
         this.updatePageTitle();
     }
@@ -258,6 +260,7 @@ class EssayTimer {
             `;
             this.container.appendChild(timerContainer);
             this.stageElements[stage.id] = {
+                container: timerContainer,
                 input: timerContainer.querySelector(`input[data-id="${stage.id}"]`),
                 display: timerContainer.querySelector(`div[data-id="${stage.id}-display"]`),
                 progress: timerContainer.querySelector(`div[data-id="${stage.id}-progress"]`),
@@ -277,6 +280,7 @@ class EssayTimer {
             }
         });
         this.updateAllDisplays();
+        this.highlightCurrentStage();
     }
     attachEventListeners() {
         this.themeToggleBtn.addEventListener('click', () => this.toggleTheme());
@@ -530,6 +534,17 @@ class EssayTimer {
         let totalSeconds = activeStages.reduce((acc, stage) => acc + (stage.duration * 60), 0);
         this.totalTimeEl.textContent = `Tiempo Total: ${this.formatTime(totalSeconds)}`;
     }
+
+    highlightCurrentStage() {
+        if (this.previousStageId && this.stageElements[this.previousStageId]?.container) {
+            this.stageElements[this.previousStageId].container.classList.remove('active-stage');
+        }
+        const current = this.stages[this.currentStageIndex];
+        if (current && this.stageElements[current.id]?.container) {
+            this.stageElements[current.id].container.classList.add('active-stage');
+            this.previousStageId = current.id;
+        }
+    }
     updateAllDisplays() {
         this.stages.forEach((stage, index) => {
             const elements = this.stageElements[stage.id];
@@ -603,6 +618,7 @@ class EssayTimer {
             this.loadTemplate(this.templateSelect.value);
         }
         this.updateAllDisplays();
+        this.highlightCurrentStage();
         this.updatePageTitle();
         this.startBtn.textContent = 'Empezar';
         this.startBtn.disabled = !this.currentEssayName;
