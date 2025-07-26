@@ -26,8 +26,7 @@ const pomodoro30Template = {
     ]
 };
 
-const db = new LocalDB('essayTimer');
-
+let db;
 class EssayTimer {
     constructor(containerId) {
         this.container = document.getElementById(containerId);
@@ -631,10 +630,34 @@ class EssayTimer {
     }
 }
 
-if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', () => {
-        new EssayTimer('timers-container');
-    });
-} else {
-    new EssayTimer('timers-container');
+let appInstance;
+
+function startApp(nickname) {
+    db = new LocalDB('essayTimer_' + nickname);
+    appInstance = new EssayTimer('timers-container');
 }
+
+function showLogin() {
+    const overlay = document.getElementById('login-overlay');
+    const input = document.getElementById('nickname-input');
+    const btn = document.getElementById('login-btn');
+    const tryStart = () => {
+        const nick = input.value.trim();
+        if (!nick) return;
+        localStorage.setItem('currentNickname', nick);
+        overlay.classList.add('hidden');
+        startApp(nick);
+    };
+    overlay.classList.remove('hidden');
+    btn.addEventListener('click', tryStart);
+    input.addEventListener('keyup', (e) => { if (e.key === 'Enter') tryStart(); });
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    const stored = localStorage.getItem('currentNickname');
+    if (stored) {
+        startApp(stored);
+    } else {
+        showLogin();
+    }
+});
