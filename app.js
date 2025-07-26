@@ -26,6 +26,8 @@ const pomodoro30Template = {
     ]
 };
 
+const db = new LocalDB('essayTimer');
+
 class EssayTimer {
     constructor(containerId) {
         this.container = document.getElementById(containerId);
@@ -93,7 +95,7 @@ class EssayTimer {
     // --- NUEVAS FUNCIONALIDADES ---
     loadAndCheckDailySession() {
         const today = new Date().toISOString().slice(0, 10); // Formato YYYY-MM-DD
-        const sessionData = JSON.parse(localStorage.getItem('essayTimer_dailySession'));
+        const sessionData = db.get('dailySession');
 
         if (sessionData && sessionData.date === today) {
             this.dailySessionSeconds = sessionData.totalSeconds;
@@ -111,7 +113,7 @@ class EssayTimer {
             date: today,
             totalSeconds: this.dailySessionSeconds
         };
-        localStorage.setItem('essayTimer_dailySession', JSON.stringify(sessionData));
+        db.set('dailySession', sessionData);
     }
 
     updateSessionDisplay() {
@@ -231,10 +233,10 @@ class EssayTimer {
     saveTemplate() {
         const templateName = prompt("Guardar plantilla como:", "Mi Plantilla Personalizada");
         if (templateName) {
-            const templates = JSON.parse(localStorage.getItem('essayTimer_templates'));
+            const templates = db.get('templates');
             const templateKey = templateName.toLowerCase().replace(/\s+/g, '-');
             templates[templateKey] = { name: templateName, stages: this.stages };
-            localStorage.setItem('essayTimer_templates', JSON.stringify(templates));
+            db.set('templates', templates);
             this.loadTemplates();
             this.templateSelect.value = templateKey;
         }
@@ -312,23 +314,23 @@ class EssayTimer {
         this.saveTimeout = setTimeout(() => this.saveState(), 1500);
     }
     loadTheme() {
-        const theme = localStorage.getItem('essayTimer_theme') || 'light';
+        const theme = db.get('theme') || 'light';
         this.setTheme(theme);
     }
     toggleTheme() {
-        const current = localStorage.getItem('essayTimer_theme') || 'light';
+        const current = db.get('theme') || 'light';
         const next = current === 'dark' ? 'light' : 'dark';
         this.setTheme(next);
     }
     setTheme(theme) {
         document.body.className = '';
         if (theme !== 'light') document.body.classList.add(`${theme}-mode`);
-        localStorage.setItem('essayTimer_theme', theme);
+        db.set('theme', theme);
         this.themeToggleBtn.innerHTML = theme === 'dark' ? '<i class="fa-solid fa-sun"></i>' : '<i class="fa-solid fa-moon"></i>';
         if (this.themeSelect) this.themeSelect.value = theme;
     }
     loadBackgroundImage() {
-        const img = localStorage.getItem('essayTimer_bgImage');
+        const img = db.get('bgImage');
         if (img) {
             document.body.style.backgroundImage = `url(${img})`;
         }
@@ -339,13 +341,13 @@ class EssayTimer {
         const reader = new FileReader();
         reader.onload = () => {
             const data = reader.result;
-            localStorage.setItem('essayTimer_bgImage', data);
+            db.set('bgImage', data);
             document.body.style.backgroundImage = `url(${data})`;
         };
         reader.readAsDataURL(file);
     }
     clearBackgroundImage() {
-        localStorage.removeItem('essayTimer_bgImage');
+        db.remove('bgImage');
         document.body.style.backgroundImage = 'none';
         this.backgroundInput.value = '';
     }
@@ -406,13 +408,13 @@ class EssayTimer {
         this.startSound.play().catch(e => console.log('La reproducción automática fue bloqueada.'));
     }
     loadTemplates() {
-        let templates = JSON.parse(localStorage.getItem('essayTimer_templates')) || {};
+        let templates = db.get('templates') || {};
         if (Object.keys(templates).length === 0) {
             templates = { default: defaultTemplate, pomodoro30: pomodoro30Template };
-            localStorage.setItem('essayTimer_templates', JSON.stringify(templates));
+            db.set('templates', templates);
         } else if (!templates.pomodoro30) {
             templates.pomodoro30 = pomodoro30Template;
-            localStorage.setItem('essayTimer_templates', JSON.stringify(templates));
+            db.set('templates', templates);
         }
         this.templateSelect.innerHTML = '';
         for (const key in templates) {
@@ -424,16 +426,16 @@ class EssayTimer {
     }
     loadTemplate(templateKey) {
         if (this.isEditMode) return;
-        const templates = JSON.parse(localStorage.getItem('essayTimer_templates'));
+        const templates = db.get('templates');
         this.stages = JSON.parse(JSON.stringify(templates[templateKey].stages));
         this.renderStages();
         this.reset();
     }
     populateSavedEssays() {
-        const essayIndex = JSON.parse(localStorage.getItem('essayTimer_index')) || [];
+        const essayIndex = db.get('index') || [];
         this.savedEssaysSelect.innerHTML = '<option value="">Cargar Ensayo Guardado</option>';
         essayIndex.forEach(essayKey => {
-            const essayData = JSON.parse(localStorage.getItem(`essayTimer_${essayKey}`));
+            const essayData = db.get(essayKey);
             const option = document.createElement('option');
             option.value = essayKey;
             const modifiedDate = essayData?.lastModified ? new Date(essayData.lastModified).toLocaleString('es-AR') : 'N/A';
@@ -454,10 +456,10 @@ class EssayTimer {
             isPaused: this.isPaused,
             notes: this.essayNotes.value
         };
-        localStorage.setItem(`essayTimer_${this.currentEssayName}`, JSON.stringify(state));
+        db.set(this.currentEssayName, state);
     }
     loadState(essayName) {
-        const state = JSON.parse(localStorage.getItem(`essayTimer_${essayName}`));
+        const state = db.get(essayName);
         if (!state) return;
         this.currentEssayName = essayName;
         this.templateSelect.value = state.templateKey;
@@ -486,10 +488,10 @@ class EssayTimer {
             alert('Por favor, introduce un nombre para tu ensayo.');
             return;
         }
-        let essays = JSON.parse(localStorage.getItem('essayTimer_index') || '[]');
+        let essays = db.get('index') || [];
         if (!essays.includes(name)) {
             essays.push(name);
-            localStorage.setItem('essayTimer_index', JSON.stringify(essays));
+            db.set('index', essays);
         }
         this.currentEssayName = name;
         this.essayNameInput.value = '';
@@ -516,10 +518,10 @@ class EssayTimer {
     deleteSelectedEssay() {
         const name = this.savedEssaysSelect.value;
         if (!name || !confirm(`¿Seguro que quieres borrar "${name}"? Esta acción no se puede deshacer.`)) return;
-        localStorage.removeItem(`essayTimer_${name}`);
-        let essays = JSON.parse(localStorage.getItem('essayTimer_index') || '[]');
+        db.remove(name);
+        let essays = db.get('index') || [];
         essays = essays.filter(e => e !== name);
-        localStorage.setItem('essayTimer_index', JSON.stringify(essays));
+        db.set('index', essays);
         this.populateSavedEssays();
         this.currentEssayName = null;
         this.reset();
