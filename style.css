@@ -171,6 +171,28 @@ textarea {
   font-weight: bold;
 }
 
+/* Goblin mini-game */
+#goblin-game {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 10px;
+}
+#goblin-health-bar {
+  width: 150px;
+  height: 15px;
+  background: #e9ecef;
+  border-radius: 8px;
+  overflow: hidden;
+  margin-top: 5px;
+}
+#goblin-health {
+  height: 100%;
+  width: 100%;
+  background: #28a745;
+  transition: width 0.3s;
+}
+
 /* ==========================
    MANAGERS (Essay / Template)
    ========================== */
