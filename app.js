@@ -273,11 +273,14 @@ class EssayTimer {
                 this.stageElements[stage.id].input.addEventListener('input', () => {
                     const newDuration = parseInt(this.stageElements[stage.id].input.value, 10) || 0;
                     const stageToUpdate = this.stages.find(s => s.id === stage.id);
-                    if (stageToUpdate) stageToUpdate.duration = newDuration;
+                    if (stageToUpdate) {
+                        const oldDuration = stageToUpdate.duration;
+                        stageToUpdate.duration = newDuration;
 
-                    // Si la etapa editada es la que está corriendo, actualizamos el tiempo restante
-                    if (this.isRunning && stage.id === this.stages[this.currentStageIndex].id && !stage.isExtra) {
-                        this.timeLeftInStage = newDuration * 60;
+                        // Si la etapa editada está corriendo, ajustamos el tiempo restante en función de la diferencia
+                        if (this.isRunning && stage.id === this.stages[this.currentStageIndex].id && !stage.isExtra) {
+                            this.timeLeftInStage = Math.max(0, this.timeLeftInStage + (newDuration - oldDuration) * 60);
+                        }
                     }
 
                     this.updateAllDisplays();
