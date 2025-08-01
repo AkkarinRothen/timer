@@ -271,8 +271,15 @@ class EssayTimer {
         this.stages.forEach(stage => {
             if (this.stageElements[stage.id]?.input) {
                 this.stageElements[stage.id].input.addEventListener('input', () => {
+                    const newDuration = parseInt(this.stageElements[stage.id].input.value, 10) || 0;
                     const stageToUpdate = this.stages.find(s => s.id === stage.id);
-                    if (stageToUpdate) stageToUpdate.duration = parseInt(this.stageElements[stage.id].input.value, 10) || 0;
+                    if (stageToUpdate) stageToUpdate.duration = newDuration;
+
+                    // Si la etapa editada es la que está corriendo, actualizamos el tiempo restante
+                    if (this.isRunning && stage.id === this.stages[this.currentStageIndex].id && !stage.isExtra) {
+                        this.timeLeftInStage = newDuration * 60;
+                    }
+
                     this.updateAllDisplays();
                 });
             }
