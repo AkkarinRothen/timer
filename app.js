@@ -61,6 +61,8 @@ class EssayTimer {
         this.essayNotes = document.getElementById('essay-notes');
         this.notificationSound = document.getElementById('notification-sound');
         this.startSound = document.getElementById('start-sound');
+        this.goblinHealthEl = document.getElementById('goblin-health');
+        this.goblinHealth = 100;
 
         // State
         this.stages = [];
@@ -89,6 +91,7 @@ class EssayTimer {
         this.loadTheme();
         this.loadBackgroundImage();
         this.setupVisibilityHandler();
+        this.updateGoblinDisplay();
     }
     
     // --- NUEVAS FUNCIONALIDADES ---
@@ -125,6 +128,20 @@ class EssayTimer {
     updatePomodoroDisplay() {
         if (this.pomodoroCountEl) {
             this.pomodoroCountEl.textContent = this.pomodorosCompleted;
+        }
+    }
+
+    updateGoblinDisplay() {
+        if (this.goblinHealthEl) {
+            this.goblinHealthEl.style.width = `${this.goblinHealth}%`;
+        }
+    }
+
+    damageGoblin(amount = 10) {
+        this.goblinHealth = Math.max(0, this.goblinHealth - amount);
+        this.updateGoblinDisplay();
+        if (this.goblinHealth === 0 && window.asistenteDecir) {
+            window.asistenteDecir('¡Has derrotado al goblin!');
         }
     }
 
@@ -168,6 +185,7 @@ class EssayTimer {
                     this.pomodorosCompleted++;
                     this.updatePomodoroDisplay();
                 }
+                this.damageGoblin();
                 this.playNotification();
                 this.currentStageIndex++;
                 this.setCurrentStage(); // setCurrentStage ahora contiene la lógica cíclica
@@ -624,6 +642,8 @@ class EssayTimer {
             this.essayNotes.value = '';
             this.pomodorosCompleted = 0;
             this.updatePomodoroDisplay();
+            this.goblinHealth = 100;
+            this.updateGoblinDisplay();
         }
         if (fullReset) {
             this.loadTemplate(this.templateSelect.value);
