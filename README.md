@@ -11,7 +11,7 @@ This is a basic HTML starter project you can build on however you like. No need 
 * Sonido "Start" reproducido cada vez que comienza una nueva etapa.
 * Cuando la pestaña del navegador queda oculta, un pequeño overlay muestra la etapa actual y el tiempo restante.
 * Si el asistente estaba oculto, se mostrará temporalmente para anunciar la etapa.
-* Lista de tareas con fecha y prioridad. Las tareas pueden ordenarse arrastrándolas o mediante botones para ordenar por fecha o por nivel de prioridad.
+* Lista de tareas en ventana flotante con fecha y prioridad. Las tareas pueden arrastrarse, ordenarse por fecha o prioridad y marcarse como completadas registrando la hora de finalización. También es posible ordenarlas mediante botones. Las prioridades se muestran con colores distintivos.
 
 ## Overlay flotante
 
@@ -54,4 +54,3 @@ Add these meta tags for SEO and social sharing between your page `<head></head>`
 <meta property="og:description" content="A simple website, built with Glitch. Remix it to get your own."/>
 <meta property="og:image" content="https://cdn.glitch.com/605e2a51-d45f-4d87-a285-9410ad350515%2Fhello-website-social.png?v=1616712748147"/>
 <meta name="twitter:card" content="summary" />
-```
