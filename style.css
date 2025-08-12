@@ -436,8 +436,80 @@ textarea {
 }
 
 /* ==========================
+   TODO LIST (Floating panel)
+   ========================== */
+#todo-section {
+  position: fixed;
+  top: 1rem;
+  right: 1rem;
+  width: 300px;
+  margin: 0;
+  background: var(--card-bg-color);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 1rem;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+  z-index: 1000;
+}
+#todo-list { list-style: none; padding: 0; }
+
+.todo-item {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+  padding: 8px;
+  margin: 4px 0;
+  border: 1px solid var(--border-color);
+  border-radius: 5px;
+  background-color: var(--card-bg-color);
+  cursor: move;
+}
+.todo-item.dragging { opacity: 0.5; }
+
+.todo-item.done .todo-text { text-decoration: line-through; }
+
+.todo-text { flex: 1; }
+
+.todo-priority.high   { color: var(--danger-color); }
+.todo-priority.medium { color: #fd7e14; }
+.todo-priority.low    { color: #198754; }
+
+.priority-high {
+  border-left: 4px solid var(--danger-color);
+  background-color: rgba(220,53,69,0.1);
+}
+.priority-medium {
+  border-left: 4px solid #fd7e14;
+  background-color: rgba(253,126,20,0.1);
+}
+.priority-low {
+  border-left: 4px solid #198754;
+  background-color: rgba(25,135,84,0.1);
+}
+
+.completed-info {
+  width: 100%;
+  font-size: 0.8em;
+  color: #6c757d;
+}
+
+.todo-item .form-check-input { margin-right: 0.5rem; }
+
+/* ==========================
    RESPONSIVE
    ========================== */
+@media (max-width: 992px) {
+  /* Hacer la lista de tareas “embebida” en móviles/tablet */
+  #todo-section {
+    position: static;
+    width: 100%;
+    max-width: 800px;
+    margin: 0 auto 1rem auto;
+    box-shadow: none;
+  }
+}
+
 @media (max-width: 768px) {
   .main-container { padding: 0 10px; }
   .manager-section { flex-direction: column; }
@@ -472,15 +544,8 @@ textarea {
 }
 
 @media (max-width: 480px) {
-  #asistente-container {
-    bottom: 10px;
-    right: 10px;
-  }
-  #assistant-toggle-btn {
-    bottom: 10px;
-    right: 10px;
-    top: auto;
-  }
+  #asistente-container { bottom: 10px; right: 10px; }
+  #assistant-toggle-btn { bottom: 10px; right: 10px; top: auto; }
   #personaje-img { height: 200px; }
   #dialogo-burbuja {
     font-size: 14px;
@@ -488,7 +553,9 @@ textarea {
   }
 }
 
-/* User login overlay */
+/* ==========================
+   USER LOGIN OVERLAY
+   ========================== */
 #login-overlay {
   position: fixed;
   top: 0;
@@ -501,9 +568,7 @@ textarea {
   justify-content: center;
   z-index: 20000;
 }
-#login-overlay.hidden {
-  display: none;
-}
+#login-overlay.hidden { display: none; }
 #login-box {
   background: var(--card-bg-color);
   color: var(--text-color);
@@ -511,80 +576,4 @@ textarea {
   border-radius: 8px;
   text-align: center;
 }
-#login-box input {
-  margin-bottom: 10px;
-}
-
-/* ==========================
-   TODO LIST
-   ========================== */
-#todo-section {
-  position: fixed;
-  top: 1rem;
-  right: 1rem;
-  width: 300px;
-  margin: 0;
-  background: var(--card-bg-color);
-  border: 1px solid var(--border-color);
-  border-radius: 8px;
-  padding: 1rem;
-  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-  z-index: 1000;
-}
-#todo-list {
-  list-style: none;
-  padding: 0;
-}
-.todo-item {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  align-items: center;
-  padding: 8px;
-  margin: 4px 0;
-  border: 1px solid var(--border-color);
-  border-radius: 5px;
-  background-color: var(--card-bg-color);
-  cursor: move;
-}
-.todo-item.done .todo-text {
-  text-decoration: line-through;
-}
-.todo-item.dragging {
-  opacity: 0.5;
-}
-.todo-text {
-  flex: 1;
-}
-.todo-priority.high {
-  color: var(--danger-color);
-}
-.todo-priority.medium {
-  color: #fd7e14;
-}
-.todo-priority.low {
-  color: #198754;
-}
-
-.priority-high {
-  border-left: 4px solid var(--danger-color);
-  background-color: rgba(220,53,69,0.1);
-}
-.priority-medium {
-  border-left: 4px solid #fd7e14;
-  background-color: rgba(253,126,20,0.1);
-}
-.priority-low {
-  border-left: 4px solid #198754;
-  background-color: rgba(25,135,84,0.1);
-}
-
-.completed-info {
-  width: 100%;
-  font-size: 0.8em;
-  color: #6c757d;
-}
-
-.todo-item .form-check-input {
-  margin-right: 0.5rem;
-}
+#login-box input { margin-bottom: 10px; }
