@@ -64,6 +64,9 @@
           <button id="assistant-toggle-btn" class="btn btn-secondary" title="Mostrar/Ocultar Asistente">
             <i class="fa-solid fa-comments"></i>
           </button>
+          <button id="todo-toggle-btn" class="btn btn-secondary" title="Mostrar/Ocultar Tareas">
+            <i class="fa-solid fa-list-check"></i>
+          </button>
 
           <!-- Theme settings -->
           <div id="theme-settings" class="theme-settings">
@@ -125,6 +128,33 @@
           <div id="notes-section" class="mb-4">
             <h2>Notas del Ensayo</h2>
             <textarea id="essay-notes" class="form-control" rows="5" placeholder="Escribe tus ideas, enlaces o recordatorios aquí..."></textarea>
+          </div>
+
+          <div id="todo-section" class="text-start">
+            <h2>Lista de Tareas</h2>
+            <form id="todo-form" class="row g-2 align-items-center">
+              <div class="col-sm">
+                <input type="text" id="todo-input" class="form-control" placeholder="Nueva tarea" />
+              </div>
+              <div class="col-auto">
+                <input type="date" id="todo-date" class="form-control" />
+              </div>
+              <div class="col-auto">
+                <select id="todo-priority" class="form-select">
+                  <option value="low">Baja</option>
+                  <option value="medium">Media</option>
+                  <option value="high">Alta</option>
+                </select>
+              </div>
+              <div class="col-auto">
+                <button type="submit" class="btn btn-primary">Agregar</button>
+              </div>
+            </form>
+            <div class="my-2">
+              <button id="sort-date" class="btn btn-sm btn-outline-secondary">Ordenar por Fecha</button>
+              <button id="sort-priority" class="btn btn-sm btn-outline-secondary">Ordenar por Prioridad</button>
+            </div>
+            <ul id="todo-list" class="list-unstyled"></ul>
           </div>
 
           <div id="total-time" class="mb-3"><strong>Tiempo Total:</strong> <span>00:00</span></div>
@@ -241,6 +271,7 @@
 
   <script src="db.js"></script>
   <script src="app.js"></script>
+  <script src="todo.js"></script>
   <script src="assistant.js"></script>
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
