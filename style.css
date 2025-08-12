@@ -514,3 +514,41 @@ textarea {
 #login-box input {
   margin-bottom: 10px;
 }
+
+/* ==========================
+   TODO LIST
+   ========================== */
+#todo-section {
+  max-width: 800px;
+  margin: 0 auto;
+}
+#todo-list {
+  list-style: none;
+  padding: 0;
+}
+.todo-item {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  padding: 8px;
+  margin: 4px 0;
+  border: 1px solid var(--border-color);
+  border-radius: 5px;
+  background-color: var(--card-bg-color);
+  cursor: move;
+}
+.todo-item.dragging {
+  opacity: 0.5;
+}
+.todo-text {
+  flex: 1;
+}
+.todo-priority.high {
+  color: var(--danger-color);
+}
+.todo-priority.medium {
+  color: #fd7e14;
+}
+.todo-priority.low {
+  color: #198754;
+}
