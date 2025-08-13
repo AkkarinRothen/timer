@@ -11,6 +11,7 @@ This is a basic HTML starter project you can build on however you like. No need 
 * Sonido "Start" reproducido cada vez que comienza una nueva etapa.
 * Cuando la pestaña del navegador queda oculta, un pequeño overlay muestra la etapa actual y el tiempo restante.
 * Si el asistente estaba oculto, se mostrará temporalmente para anunciar la etapa.
+* Lista de tareas en ventana flotante con fecha y prioridad. Las tareas pueden arrastrarse, ordenarse por fecha o prioridad y marcarse como completadas, registrando la hora de finalización. Las prioridades se muestran con colores distintivos y la ventana permite desplazarse para manejar listas largas.
 
 ## Overlay flotante
 
