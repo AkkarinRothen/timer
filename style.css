@@ -467,6 +467,10 @@ edit-mode-active #template-controls .edit-mode-only,
   overflow: visible;
 }
 #todo-list { list-style: none; padding: 0; }
+#completed-list.drag-over {
+  background-color: rgba(0, 0, 0, 0.05);
+  border: 2px dashed var(--border-color);
+}
 
 .todo-item {
   display: flex;
