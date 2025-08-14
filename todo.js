@@ -37,6 +37,11 @@ class TodoApp {
 
     if (this.listEl) {
       this.listEl.addEventListener('dragover', (e) => this.onDragOver(e));
+      this.listEl.addEventListener('drop', (e) => this.onDropPending(e));
+    }
+    if (this.completedListEl) {
+      this.completedListEl.addEventListener('dragover', (e) => this.onDragOverCompleted(e));
+      this.completedListEl.addEventListener('drop', (e) => this.onDropCompleted(e));
     }
 
     if (this.toggleBtn && this.section) {
@@ -159,12 +164,43 @@ class TodoApp {
   onDragOver(e) {
     e.preventDefault();
     const afterElement = this.getDragAfterElement(e.clientY);
-    const dragging = this.listEl.querySelector('.dragging');
+    const dragging = document.querySelector('.todo-item.dragging');
     if (!dragging) return;
     if (afterElement == null) {
       this.listEl.appendChild(dragging);
     } else {
       this.listEl.insertBefore(dragging, afterElement);
+    }
+  }
+
+  onDragOverCompleted(e) {
+    e.preventDefault();
+    const dragging = document.querySelector('.todo-item.dragging');
+    if (!dragging) return;
+    if (!this.completedListEl.contains(dragging)) {
+      this.completedListEl.appendChild(dragging);
+    }
+  }
+
+  onDropCompleted(e) {
+    e.preventDefault();
+    const dragging = document.querySelector('.todo-item.dragging');
+    if (!dragging) return;
+    const id = Number(dragging.dataset.id);
+    const task = this.tasks.find(t => t.id === id);
+    if (task && !task.completed) {
+      this.toggleComplete(id);
+    }
+  }
+
+  onDropPending(e) {
+    e.preventDefault();
+    const dragging = document.querySelector('.todo-item.dragging');
+    if (!dragging) return;
+    const id = Number(dragging.dataset.id);
+    const task = this.tasks.find(t => t.id === id);
+    if (task && task.completed) {
+      this.toggleComplete(id);
     }
   }
 
