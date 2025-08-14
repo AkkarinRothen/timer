@@ -28,6 +28,45 @@ const pomodoro30Template = {
     ]
 };
 
+const pomodoro25Template = {
+    name: 'Pomodoro 25/5',
+    stages: [
+        { id: 'pomodoro-1', label: 'Pomodoro 1', duration: 25, isPomodoro: true },
+        { id: 'break-1', label: 'Descanso', duration: 5 },
+        { id: 'pomodoro-2', label: 'Pomodoro 2', duration: 25, isPomodoro: true },
+        { id: 'break-2', label: 'Descanso', duration: 5 },
+        { id: 'pomodoro-3', label: 'Pomodoro 3', duration: 25, isPomodoro: true },
+        { id: 'break-3', label: 'Descanso', duration: 5 },
+        { id: 'pomodoro-4', label: 'Pomodoro 4', duration: 25, isPomodoro: true },
+        { id: 'long-break', label: 'Descanso Largo', duration: 15 },
+        { id: 'extra', label: 'Extra Time', duration: 0, isExtra: true }
+    ]
+};
+
+const pomodoro50Template = {
+    name: 'Pomodoro 50/10',
+    stages: [
+        { id: 'pomodoro-1', label: 'Pomodoro 1', duration: 50, isPomodoro: true },
+        { id: 'break-1', label: 'Descanso', duration: 10 },
+        { id: 'pomodoro-2', label: 'Pomodoro 2', duration: 50, isPomodoro: true },
+        { id: 'break-2', label: 'Descanso', duration: 10 },
+        { id: 'pomodoro-3', label: 'Pomodoro 3', duration: 50, isPomodoro: true },
+        { id: 'long-break', label: 'Descanso Largo', duration: 30 },
+        { id: 'extra', label: 'Extra Time', duration: 0, isExtra: true }
+    ]
+};
+
+const writingSessionTemplate = {
+    name: 'Sesión de Redacción',
+    stages: [
+        { id: 'session-1', label: 'Escritura 1', duration: 45 },
+        { id: 'break-1', label: 'Descanso', duration: 15 },
+        { id: 'session-2', label: 'Escritura 2', duration: 45 },
+        { id: 'break-2', label: 'Descanso', duration: 15 },
+        { id: 'extra', label: 'Extra Time', duration: 0, isExtra: true }
+    ]
+};
+
 export class EssayTimer {
     constructor(containerId, db) {
         this.db = db;
@@ -63,6 +102,11 @@ export class EssayTimer {
         this.essayNotes = document.getElementById('essay-notes');
         this.notificationSound = document.getElementById('notification-sound');
         this.startSound = document.getElementById('start-sound');
+        this.stageModalEl = document.getElementById('stage-modal');
+        this.stageModal = this.stageModalEl ? new bootstrap.Modal(this.stageModalEl) : null;
+        this.stageLabelInput = document.getElementById('stage-label');
+        this.stageDurationInput = document.getElementById('stage-duration');
+        this.stageSaveBtn = document.getElementById('stage-save-btn');
         this.goblin = new Goblin(document.getElementById('goblin-health'));
 
         // State
@@ -77,6 +121,7 @@ export class EssayTimer {
         this.extraTime = 0;
         this.dailySessionSeconds = 0; // NUEVO
         this.pomodorosCompleted = 0;
+        this.currentStageEditId = null;
 
         this.init();
     }
@@ -223,15 +268,45 @@ export class EssayTimer {
         }
     }
     addStage() {
-        const label = prompt("Nombre de la nueva etapa:", "Nueva Etapa");
-        if (!label) return;
-        const duration = parseInt(prompt(`Duración para "${label}" en minutos:`, "10"), 10) || 10;
-        const id = `${label.toLowerCase().replace(/\s+/g, '-')}-${Date.now()}`;
-        this.stages.splice(-1, 0, { id, label, duration });
-        this.renderStages();
+        this.showStageModal();
     }
     deleteStage(stageIdToDelete) {
         this.stages = this.stages.filter(stage => stage.id !== stageIdToDelete);
+        this.renderStages();
+    }
+    showStageModal(stage = null) {
+        if (!this.stageModal) return;
+        this.currentStageEditId = stage ? stage.id : null;
+        const titleEl = this.stageModalEl.querySelector('.modal-title');
+        if (titleEl) {
+            titleEl.textContent = stage ? 'Editar Etapa' : 'Nueva Etapa';
+        }
+        this.stageLabelInput.value = stage ? stage.label : '';
+        this.stageDurationInput.value = stage ? stage.duration : '';
+        this.stageModal.show();
+    }
+    saveStageFromModal() {
+        const label = this.stageLabelInput.value.trim();
+        const duration = parseInt(this.stageDurationInput.value, 10) || 0;
+        if (!label) {
+            this.stageModal.hide();
+            return;
+        }
+        if (this.currentStageEditId) {
+            const stage = this.stages.find(s => s.id === this.currentStageEditId);
+            if (stage) {
+                const oldDuration = stage.duration;
+                stage.label = label;
+                stage.duration = duration;
+                if (this.isRunning && stage.id === this.stages[this.currentStageIndex].id && !stage.isExtra) {
+                    this.timeLeftInStage = Math.max(0, this.timeLeftInStage + (duration - oldDuration) * 60);
+                }
+            }
+        } else {
+            const id = `${label.toLowerCase().replace(/\s+/g, '-')}-${Date.now()}`;
+            this.stages.splice(-1, 0, { id, label, duration });
+        }
+        this.stageModal.hide();
         this.renderStages();
     }
     saveTemplate() {
@@ -254,45 +329,36 @@ export class EssayTimer {
     }
     renderStages() {
         this.container.innerHTML = '';
+        this.stageElements = {};
         this.stages.forEach(stage => {
             const timerContainer = document.createElement('div');
             timerContainer.className = 'timer-container';
             timerContainer.innerHTML = `
                 <button class="delete-stage-btn" data-id="${stage.id}">×</button>
-                <h2>${stage.label}</h2>
-                ${!stage.isExtra ? `<input type="number" data-id="${stage.id}" value="${stage.duration}" min="0"> minutos` : ''}
+                <button class="edit-stage-btn" data-id="${stage.id}"><i class="fa-solid fa-pen"></i></button>
+                <h2 class="stage-label">${stage.label}</h2>
+                ${!stage.isExtra ? `<div class="stage-duration" data-id="${stage.id}-duration">${stage.duration} min</div>` : ''}
                 <div class="timer-display green" data-id="${stage.id}-display">00:00</div>
                 ${!stage.isExtra ? `<div class="progress-bar"><div class="progress" data-id="${stage.id}-progress"></div></div>` : ''}
             `;
             this.container.appendChild(timerContainer);
             this.stageElements[stage.id] = {
                 container: timerContainer,
-                input: timerContainer.querySelector(`input[data-id="${stage.id}"]`),
                 display: timerContainer.querySelector(`div[data-id="${stage.id}-display"]`),
                 progress: timerContainer.querySelector(`div[data-id="${stage.id}-progress"]`),
-                deleteBtn: timerContainer.querySelector(`button[data-id="${stage.id}"]`),
+                deleteBtn: timerContainer.querySelector(`button.delete-stage-btn[data-id="${stage.id}"]`),
+                editBtn: timerContainer.querySelector(`button.edit-stage-btn[data-id="${stage.id}"]`),
+                durationLabel: timerContainer.querySelector(`div[data-id="${stage.id}-duration"]`),
+                labelEl: timerContainer.querySelector('h2.stage-label')
             };
         });
         this.stages.forEach(stage => {
-            if (this.stageElements[stage.id]?.input) {
-                this.stageElements[stage.id].input.addEventListener('input', () => {
-                    const newDuration = parseInt(this.stageElements[stage.id].input.value, 10) || 0;
-                    const stageToUpdate = this.stages.find(s => s.id === stage.id);
-                    if (stageToUpdate) {
-                        const oldDuration = stageToUpdate.duration;
-                        stageToUpdate.duration = newDuration;
-
-                        // Si la etapa editada está corriendo, ajustamos el tiempo restante en función de la diferencia
-                        if (this.isRunning && stage.id === this.stages[this.currentStageIndex].id && !stage.isExtra) {
-                            this.timeLeftInStage = Math.max(0, this.timeLeftInStage + (newDuration - oldDuration) * 60);
-                        }
-                    }
-
-                    this.updateAllDisplays();
-                });
+            const elements = this.stageElements[stage.id];
+            if (elements?.deleteBtn) {
+                elements.deleteBtn.addEventListener('click', () => this.deleteStage(stage.id));
             }
-            if (this.stageElements[stage.id]?.deleteBtn) {
-                this.stageElements[stage.id].deleteBtn.addEventListener('click', () => this.deleteStage(stage.id));
+            if (elements?.editBtn) {
+                elements.editBtn.addEventListener('click', () => this.showStageModal(stage));
             }
         });
         this.updateAllDisplays();
@@ -318,7 +384,10 @@ export class EssayTimer {
         this.editTemplateBtn.addEventListener('click', () => this.toggleEditMode());
         this.saveTemplateBtn.addEventListener('click', () => this.saveTemplate());
         this.cancelEditBtn.addEventListener('click', () => this.cancelEdit());
-        this.addStageBtn.addEventListener('click', () => this.addStage());
+        this.addStageBtn.addEventListener('click', () => this.showStageModal());
+        if (this.stageSaveBtn) {
+            this.stageSaveBtn.addEventListener('click', () => this.saveStageFromModal());
+        }
         this.essayNotes.addEventListener('input', () => this.debouncedSave());
         // MODIFICADO: Guardar sesión al cerrar la página
         window.addEventListener('beforeunload', () => this.saveDailySession());
@@ -424,10 +493,19 @@ export class EssayTimer {
     loadTemplates() {
         let templates = this.db.get('templates') || {};
         if (Object.keys(templates).length === 0) {
-            templates = { default: defaultTemplate, pomodoro30: pomodoro30Template };
+            templates = {
+                default: defaultTemplate,
+                pomodoro25: pomodoro25Template,
+                pomodoro30: pomodoro30Template,
+                pomodoro50: pomodoro50Template,
+                writing: writingSessionTemplate
+            };
             this.db.set('templates', templates);
-        } else if (!templates.pomodoro30) {
-            templates.pomodoro30 = pomodoro30Template;
+        } else {
+            if (!templates.pomodoro25) templates.pomodoro25 = pomodoro25Template;
+            if (!templates.pomodoro30) templates.pomodoro30 = pomodoro30Template;
+            if (!templates.pomodoro50) templates.pomodoro50 = pomodoro50Template;
+            if (!templates.writing) templates.writing = writingSessionTemplate;
             this.db.set('templates', templates);
         }
         this.templateSelect.innerHTML = '';
@@ -641,7 +719,6 @@ export class EssayTimer {
         this.startBtn.disabled = !this.currentEssayName;
         this.pauseBtn.disabled = true;
         this.resetBtn.disabled = !this.currentEssayName;
-        this.stages.forEach(s => { if(this.stageElements[s.id]?.input) this.stageElements[s.id].input.disabled = false; });
         if (this.currentEssayName) this.saveState();
     }
 }

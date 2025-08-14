@@ -264,6 +264,32 @@
     </div>
   </div>
 
+  <!-- Stage Modal -->
+  <div class="modal fade" id="stage-modal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Etapa</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <div class="mb-3">
+            <label for="stage-label" class="form-label">Nombre</label>
+            <input type="text" id="stage-label" class="form-control" required>
+          </div>
+          <div class="mb-3">
+            <label for="stage-duration" class="form-label">Duración (minutos)</label>
+            <input type="number" id="stage-duration" class="form-control" min="0" required>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+          <button type="button" id="stage-save-btn" class="btn btn-primary">Guardar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- Scripts -->
   <script src="html5up-massively/assets/js/jquery.min.js"></script>
   <script src="html5up-massively/assets/js/jquery.scrollex.min.js"></script>

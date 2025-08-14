@@ -268,7 +268,7 @@ textarea {
 /* ==========================
    EDIT MODE
    ========================== */
-.delete-stage-btn {
+.delete-stage-btn { 
   position: absolute;
   top: 5px;
   right: 5px;
@@ -288,6 +288,22 @@ textarea {
 .edit-mode-only { display: none; }
 
 .edit-mode-active .delete-stage-btn { display: block; }
+.edit-stage-btn {
+  position: absolute;
+  top: 5px;
+  left: 5px;
+  background-color: var(--primary-color);
+  color: white;
+  border-radius: 50%;
+  width: 25px;
+  height: 25px;
+  padding: 0;
+  line-height: 25px;
+  text-align: center;
+  display: none;
+}
+.edit-stage-btn:hover { background-color: var(--primary-hover); }
+.edit-mode-active .edit-stage-btn { display: block; }
 .edit-mode-active #template-controls #edit-template-btn { display: none; }
 edit-mode-active #template-controls .edit-mode-only,
 .edit-mode-active #add-stage-container { display: inline-block; }
