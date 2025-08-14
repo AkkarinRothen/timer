@@ -41,6 +41,8 @@ class TodoApp {
     }
     if (this.completedListEl) {
       this.completedListEl.addEventListener('dragover', (e) => this.onDragOverCompleted(e));
+      this.completedListEl.addEventListener('dragenter', () => this.completedListEl.classList.add('drag-over'));
+      this.completedListEl.addEventListener('dragleave', () => this.completedListEl.classList.remove('drag-over'));
       this.completedListEl.addEventListener('drop', (e) => this.onDropCompleted(e));
     }
 
@@ -175,15 +177,11 @@ class TodoApp {
 
   onDragOverCompleted(e) {
     e.preventDefault();
-    const dragging = document.querySelector('.todo-item.dragging');
-    if (!dragging) return;
-    if (!this.completedListEl.contains(dragging)) {
-      this.completedListEl.appendChild(dragging);
-    }
   }
 
   onDropCompleted(e) {
     e.preventDefault();
+    this.completedListEl.classList.remove('drag-over');
     const dragging = document.querySelector('.todo-item.dragging');
     if (!dragging) return;
     const id = Number(dragging.dataset.id);
@@ -195,6 +193,7 @@ class TodoApp {
 
   onDropPending(e) {
     e.preventDefault();
+    this.completedListEl.classList.remove('drag-over');
     const dragging = document.querySelector('.todo-item.dragging');
     if (!dragging) return;
     const id = Number(dragging.dataset.id);
