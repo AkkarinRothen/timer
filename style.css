@@ -289,7 +289,7 @@ textarea {
 
 .edit-mode-active .delete-stage-btn { display: block; }
 .edit-mode-active #template-controls #edit-template-btn { display: none; }
-.edit-mode-active #template-controls .edit-mode-only,
+edit-mode-active #template-controls .edit-mode-only,
 .edit-mode-active #add-stage-container { display: inline-block; }
 
 #add-stage-container { margin-top: 10px; }
@@ -429,7 +429,6 @@ textarea {
   from { opacity: 0; transform: translateY(20px); }
   to   { opacity: 1; transform: translateY(0); }
 }
-
 @keyframes asistente-pop {
   0%   { transform: scale(0.8) translateY(10px); opacity: 0; }
   100% { transform: scale(1) translateY(0); opacity: 1; }
@@ -450,6 +449,8 @@ textarea {
   padding: 1rem;
   box-shadow: 0 4px 8px rgba(0,0,0,0.2);
   z-index: 1000;
+  max-height: 70vh;         /* Scroll interno */
+  overflow-y: auto;
 }
 #todo-list { list-style: none; padding: 0; }
 
@@ -466,7 +467,6 @@ textarea {
   cursor: move;
 }
 .todo-item.dragging { opacity: 0.5; }
-
 .todo-item.done .todo-text { text-decoration: line-through; }
 
 .todo-text { flex: 1; }
@@ -500,13 +500,15 @@ textarea {
    RESPONSIVE
    ========================== */
 @media (max-width: 992px) {
-  /* Hacer la lista de tareas “embebida” en móviles/tablet */
+  /* Integrar la lista en móviles/tablet */
   #todo-section {
     position: static;
     width: 100%;
     max-width: 800px;
     margin: 0 auto 1rem auto;
     box-shadow: none;
+    max-height: none;
+    overflow: visible;
   }
 }
 
@@ -521,36 +523,20 @@ textarea {
   }
   #theme-settings.visible { display: flex; }
 
-  #theme-toggle-btn {
-    bottom: 15px;
-    top: auto;
-    left: 10px;
-  }
-  #settings-toggle-btn {
-    bottom: 15px;
-    top: auto;
-    left: 60px;
-  }
-  #assistant-toggle-btn {
-    bottom: 15px;
-    top: auto;
-    right: 15px;
-  }
+  #theme-toggle-btn { bottom: 15px; top: auto; left: 10px; }
+  #settings-toggle-btn { bottom: 15px; top: auto; left: 60px; }
+  #assistant-toggle-btn { bottom: 15px; top: auto; right: 15px; }
 
   .timers-grid { grid-template-columns: 1fr; }
   .timer-display { font-size: 1.5em; }
-  #session-tracker,
-  #pomodoro-counter { width: 100%; }
+  #session-tracker, #pomodoro-counter { width: 100%; }
 }
 
 @media (max-width: 480px) {
   #asistente-container { bottom: 10px; right: 10px; }
   #assistant-toggle-btn { bottom: 10px; right: 10px; top: auto; }
   #personaje-img { height: 200px; }
-  #dialogo-burbuja {
-    font-size: 14px;
-    margin-bottom: 60px;
-  }
+  #dialogo-burbuja { font-size: 14px; margin-bottom: 60px; }
 }
 
 /* ==========================

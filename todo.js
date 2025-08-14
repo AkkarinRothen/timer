@@ -1,5 +1,6 @@
 class TodoApp {
   constructor() {
+    // Estado
     this.db = new LocalDB('todo');
     this.tasks = this.db.get('tasks') || [];
     this.lastCompletedTime = this.db.get('lastCompletedTime');
@@ -174,6 +175,7 @@ class TodoApp {
   toggleComplete(id) {
     const task = this.tasks.find(t => t.id === id);
     if (!task) return;
+
     task.completed = !task.completed;
 
     if (task.completed) {
