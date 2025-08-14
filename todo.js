@@ -41,6 +41,8 @@ class TodoApp {
     }
     if (this.completedListEl) {
       this.completedListEl.addEventListener('dragover', (e) => this.onDragOverCompleted(e));
+      this.completedListEl.addEventListener('dragenter', () => this.completedListEl.classList.add('drag-over'));
+      this.completedListEl.addEventListener('dragleave', () => this.completedListEl.classList.remove('drag-over'));
       this.completedListEl.addEventListener('drop', (e) => this.onDropCompleted(e));
     }
 
@@ -102,13 +104,21 @@ class TodoApp {
       li.draggable = true;
       li.dataset.id = task.id;
 
-      // Checkbox completar
-      const checkbox = document.createElement('input');
-      checkbox.type = 'checkbox';
-      checkbox.className = 'form-check-input';
-      checkbox.checked = !!task.completed;
-      checkbox.setAttribute('aria-label', 'Marcar tarea como completada');
-      checkbox.addEventListener('change', () => this.toggleComplete(task.id));
+      // Botón completar
+      const completeBtn = document.createElement('button');
+      completeBtn.type = 'button';
+      completeBtn.className = 'btn btn-sm btn-outline-success ms-auto complete-btn';
+      completeBtn.innerHTML = '<i class="fa-solid fa-check"></i>';
+      completeBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        this.toggleComplete(task.id);
+      });
+      completeBtn.addEventListener('mousedown', (e) => e.stopPropagation());
+      if (task.completed) {
+        completeBtn.classList.remove('btn-outline-success');
+        completeBtn.classList.add('btn-outline-secondary');
+        completeBtn.innerHTML = '<i class="fa-solid fa-rotate-left"></i>';
+      }
 
       // Texto
       const textSpan = document.createElement('span');
@@ -136,7 +146,7 @@ class TodoApp {
         }
       }
 
-      li.append(checkbox, textSpan, dateSpan, prioritySpan, infoSpan);
+      li.append(textSpan, dateSpan, prioritySpan, infoSpan, completeBtn);
 
       // Drag handlers
       li.addEventListener('dragstart', () => li.classList.add('dragging'));
@@ -175,15 +185,11 @@ class TodoApp {
 
   onDragOverCompleted(e) {
     e.preventDefault();
-    const dragging = document.querySelector('.todo-item.dragging');
-    if (!dragging) return;
-    if (!this.completedListEl.contains(dragging)) {
-      this.completedListEl.appendChild(dragging);
-    }
   }
 
   onDropCompleted(e) {
     e.preventDefault();
+    this.completedListEl.classList.remove('drag-over');
     const dragging = document.querySelector('.todo-item.dragging');
     if (!dragging) return;
     const id = Number(dragging.dataset.id);
@@ -195,6 +201,7 @@ class TodoApp {
 
   onDropPending(e) {
     e.preventDefault();
+    this.completedListEl.classList.remove('drag-over');
     const dragging = document.querySelector('.todo-item.dragging');
     if (!dragging) return;
     const id = Number(dragging.dataset.id);
