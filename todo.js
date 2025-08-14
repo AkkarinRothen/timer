@@ -7,14 +7,18 @@ class TodoApp {
 
     // DOM
     this.listEl = document.getElementById('todo-list');
+    this.completedListEl = document.getElementById('completed-list');
     this.form = document.getElementById('todo-form');
     this.inputEl = document.getElementById('todo-input');
     this.dateEl = document.getElementById('todo-date');
     this.priorityEl = document.getElementById('todo-priority');
     this.sortDateBtn = document.getElementById('sort-date');
     this.sortPriorityBtn = document.getElementById('sort-priority');
+    this.searchEl = document.getElementById('todo-search');
+    this.filterEl = document.getElementById('todo-filter');
     this.section = document.getElementById('todo-section');
     this.toggleBtn = document.getElementById('todo-toggle-btn');
+    this.closeBtn = document.getElementById('todo-close-btn');
 
     // Eventos
     if (this.form) {
@@ -33,12 +37,30 @@ class TodoApp {
 
     if (this.listEl) {
       this.listEl.addEventListener('dragover', (e) => this.onDragOver(e));
+      this.listEl.addEventListener('drop', (e) => this.onDropPending(e));
+    }
+    if (this.completedListEl) {
+      this.completedListEl.addEventListener('dragover', (e) => this.onDragOverCompleted(e));
+      this.completedListEl.addEventListener('drop', (e) => this.onDropCompleted(e));
     }
 
     if (this.toggleBtn && this.section) {
       this.toggleBtn.addEventListener('click', () => {
         this.section.classList.toggle('d-none');
       });
+    }
+
+    if (this.closeBtn && this.section) {
+      this.closeBtn.addEventListener('click', () => {
+        this.section.classList.add('d-none');
+      });
+    }
+
+    if (this.searchEl) {
+      this.searchEl.addEventListener('input', () => this.render());
+    }
+    if (this.filterEl) {
+      this.filterEl.addEventListener('change', () => this.render());
     }
 
     this.render();
@@ -65,10 +87,16 @@ class TodoApp {
   }
 
   render() {
-    if (!this.listEl) return;
+    if (!this.listEl || !this.completedListEl) return;
     this.listEl.innerHTML = '';
+    this.completedListEl.innerHTML = '';
+
+    const search = (this.searchEl?.value || '').toLowerCase();
+    const filter = this.filterEl?.value || 'all';
 
     this.tasks.forEach((task) => {
+      if (!task.text.toLowerCase().includes(search)) return;
+      if (filter !== 'all' && task.priority !== filter) return;
       const li = document.createElement('li');
       li.className = `todo-item priority-${task.priority} ${task.completed ? 'done' : ''}`;
       li.draggable = true;
@@ -86,6 +114,7 @@ class TodoApp {
       const textSpan = document.createElement('span');
       textSpan.className = 'todo-text';
       textSpan.textContent = task.text;
+      textSpan.addEventListener('dblclick', () => this.editTask(task.id, textSpan));
 
       // Fecha
       const dateSpan = document.createElement('span');
@@ -116,7 +145,11 @@ class TodoApp {
         this.updateOrderFromDOM();
       });
 
-      this.listEl.appendChild(li);
+      if (task.completed) {
+        this.completedListEl.appendChild(li);
+      } else {
+        this.listEl.appendChild(li);
+      }
     });
   }
 
@@ -131,12 +164,43 @@ class TodoApp {
   onDragOver(e) {
     e.preventDefault();
     const afterElement = this.getDragAfterElement(e.clientY);
-    const dragging = this.listEl.querySelector('.dragging');
+    const dragging = document.querySelector('.todo-item.dragging');
     if (!dragging) return;
     if (afterElement == null) {
       this.listEl.appendChild(dragging);
     } else {
       this.listEl.insertBefore(dragging, afterElement);
+    }
+  }
+
+  onDragOverCompleted(e) {
+    e.preventDefault();
+    const dragging = document.querySelector('.todo-item.dragging');
+    if (!dragging) return;
+    if (!this.completedListEl.contains(dragging)) {
+      this.completedListEl.appendChild(dragging);
+    }
+  }
+
+  onDropCompleted(e) {
+    e.preventDefault();
+    const dragging = document.querySelector('.todo-item.dragging');
+    if (!dragging) return;
+    const id = Number(dragging.dataset.id);
+    const task = this.tasks.find(t => t.id === id);
+    if (task && !task.completed) {
+      this.toggleComplete(id);
+    }
+  }
+
+  onDropPending(e) {
+    e.preventDefault();
+    const dragging = document.querySelector('.todo-item.dragging');
+    if (!dragging) return;
+    const id = Number(dragging.dataset.id);
+    const task = this.tasks.find(t => t.id === id);
+    if (task && task.completed) {
+      this.toggleComplete(id);
     }
   }
 
@@ -155,7 +219,10 @@ class TodoApp {
 
   updateOrderFromDOM() {
     const order = [...this.listEl.children].map(li => Number(li.dataset.id));
-    this.tasks.sort((a, b) => order.indexOf(a.id) - order.indexOf(b.id));
+    const pending = this.tasks.filter(t => !t.completed);
+    const completed = this.tasks.filter(t => t.completed);
+    pending.sort((a, b) => order.indexOf(a.id) - order.indexOf(b.id));
+    this.tasks = [...pending, ...completed];
     this.save();
   }
 
@@ -193,6 +260,35 @@ class TodoApp {
 
     this.save();
     this.render();
+  }
+
+  editTask(id, span) {
+    const task = this.tasks.find(t => t.id === id);
+    if (!task) return;
+
+    const input = document.createElement('input');
+    input.type = 'text';
+    input.className = 'form-control form-control-sm';
+    input.value = task.text;
+    span.replaceWith(input);
+    input.focus();
+
+    const save = () => {
+      const newText = input.value.trim();
+      if (newText) {
+        task.text = newText;
+        this.save();
+      }
+      this.render();
+    };
+
+    input.addEventListener('blur', save);
+    input.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        save();
+      }
+    });
   }
 
   formatDuration(ms) {
