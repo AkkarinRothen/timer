@@ -512,7 +512,7 @@ edit-mode-active #template-controls .edit-mode-only,
   color: #6c757d;
 }
 
-.todo-item .form-check-input { margin-right: 0.5rem; }
+.todo-item .complete-btn { cursor: pointer; }
 
 #todo-input { width: 100%; }
 
