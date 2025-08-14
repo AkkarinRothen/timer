@@ -454,19 +454,17 @@ edit-mode-active #template-controls .edit-mode-only,
    TODO LIST (Floating panel)
    ========================== */
 #todo-section {
-  position: fixed;
-  top: 1rem;
-  right: 1rem;
-  width: 300px;
-  margin: 0;
+  position: static;
+  width: 100%;
+  max-width: 800px;
+  margin: 0 auto 1rem auto;
   background: var(--card-bg-color);
   border: 1px solid var(--border-color);
   border-radius: 8px;
   padding: 1rem;
-  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-  z-index: 1000;
-  max-height: 70vh;         /* Scroll interno */
-  overflow-y: auto;
+  box-shadow: none;
+  max-height: none;
+  overflow: visible;
 }
 #todo-list { list-style: none; padding: 0; }
 
@@ -512,21 +510,11 @@ edit-mode-active #template-controls .edit-mode-only,
 
 .todo-item .form-check-input { margin-right: 0.5rem; }
 
+#todo-input { width: 100%; }
+
 /* ==========================
    RESPONSIVE
    ========================== */
-@media (max-width: 992px) {
-  /* Integrar la lista en móviles/tablet */
-  #todo-section {
-    position: static;
-    width: 100%;
-    max-width: 800px;
-    margin: 0 auto 1rem auto;
-    box-shadow: none;
-    max-height: none;
-    overflow: visible;
-  }
-}
 
 @media (max-width: 768px) {
   .main-container { padding: 0 10px; }
