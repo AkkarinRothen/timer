@@ -36,7 +36,7 @@
         <li><a href="html5up-massively/generic.html">Generic Page</a></li>
         <li><a href="html5up-massively/elements.html">Elements Reference</a></li>
         <li class="active"><a href="index.html">Essay Timer</a></li>
-        <li><a href="#" id="login-menu-link">Ingresar</a></li>
+        <li><a href="#" id="login-menu-link" data-i18n="login">Ingresar</a></li>
       </ul>
       <ul class="icons">
         <li><a href="#" class="icon brands fa-twitter"><span class="label">Twitter</span></a></li>
@@ -67,6 +67,10 @@
           <button id="todo-toggle-btn" class="btn btn-secondary" title="Mostrar/Ocultar Tareas">
             <i class="fa-solid fa-list-check"></i>
           </button>
+          <select id="language-select" class="form-select form-select-sm d-inline-block w-auto ms-2">
+            <option value="es">ES</option>
+            <option value="en">EN</option>
+          </select>
 
           <!-- Theme settings -->
           <div id="theme-settings" class="theme-settings">
@@ -83,29 +87,29 @@
           <h1>Advanced Essay Timer 📝</h1>
 
           <div id="session-tracker" class="my-3">
-            <strong>Tiempo de Foco Hoy:</strong> <span id="session-time">00:00:00</span>
+            <strong data-i18n="sessionTimeToday">Tiempo de Foco Hoy:</strong> <span id="session-time">00:00:00</span>
           </div>
 
           <div id="pomodoro-counter" class="my-3">
-            <strong>Pomodoros completados:</strong> <span id="pomodoro-count">0</span>
+            <strong data-i18n="pomodorosCompleted">Pomodoros completados:</strong> <span id="pomodoro-count">0</span>
           </div>
 
           <div id="essay-manager" class="manager-section mb-4">
             <div class="row g-2 align-items-center">
               <div class="col-auto">
-                <input type="text" id="essay-name-input" class="form-control" placeholder="Nombre del Ensayo">
+                <input type="text" id="essay-name-input" class="form-control" data-i18n-placeholder="essayNamePlaceholder" placeholder="Nombre del Ensayo">
               </div>
               <div class="col-auto">
-                <button id="new-essay-btn" class="btn btn-primary">Empezar Nuevo</button>
+                <button id="new-essay-btn" class="btn btn-primary" data-i18n="startNew">Empezar Nuevo</button>
               </div>
               <div class="col-auto">O</div>
               <div class="col-auto">
                 <select id="saved-essays-select" class="form-select">
-                  <option value="">Cargar Ensayo Guardado</option>
+                  <option value="" data-i18n="loadSavedEssay">Cargar Ensayo Guardado</option>
                 </select>
               </div>
               <div class="col-auto">
-                <button id="delete-essay-btn" class="btn btn-danger" disabled>Borrar</button>
+                <button id="delete-essay-btn" class="btn btn-danger" disabled data-i18n="delete">Borrar</button>
               </div>
             </div>
           </div>
@@ -114,13 +118,13 @@
             <div class="row g-2 align-items-center">
               <div class="col-auto">
                 <select id="template-select" class="form-select">
-                  <option value="default">Plantilla por Defecto</option>
+                  <option value="default" data-i18n="defaultTemplate">Plantilla por Defecto</option>
                 </select>
               </div>
               <div class="col-auto" id="template-controls">
-                <button id="edit-template-btn" class="btn btn-secondary">Editar Plantilla</button>
-                <button id="save-template-btn" class="btn btn-success edit-mode-only">Guardar Cambios</button>
-                <button id="cancel-edit-btn" class="btn btn-outline-secondary edit-mode-only">Cancelar</button>
+                <button id="edit-template-btn" class="btn btn-secondary" data-i18n="editTemplate">Editar Plantilla</button>
+                <button id="save-template-btn" class="btn btn-success edit-mode-only" data-i18n="saveChanges">Guardar Cambios</button>
+                <button id="cancel-edit-btn" class="btn btn-outline-secondary edit-mode-only" data-i18n="cancel">Cancelar</button>
               </div>
             </div>
           </div>
@@ -157,7 +161,7 @@
             <ul id="todo-list" class="list-unstyled"></ul>
           </div>
 
-          <div id="total-time" class="mb-3"><strong>Tiempo Total:</strong> <span>00:00</span></div>
+          <div id="total-time" class="mb-3"><strong data-i18n="totalTime">Tiempo Total:</strong> <span>00:00</span></div>
 
           <div class="timers-grid row g-3" id="timers-container"></div>
 
@@ -166,9 +170,9 @@
           </div>
 
           <div id="controls" class="my-3">
-            <button id="start-btn" class="btn btn-success" disabled>Empezar</button>
-            <button id="pause-btn" class="btn btn-warning" disabled>Pausar</button>
-            <button id="reset-btn" class="btn btn-danger" disabled>Reiniciar</button>
+            <button id="start-btn" class="btn btn-success" disabled data-i18n="start">Empezar</button>
+            <button id="pause-btn" class="btn btn-warning" disabled data-i18n="pause">Pausar</button>
+            <button id="reset-btn" class="btn btn-danger" disabled data-i18n="reset">Reiniciar</button>
           </div>
 
           <div id="goblin-game" class="my-3">
@@ -270,6 +274,7 @@
   <script src="html5up-massively/assets/js/main.js"></script>
 
   <script src="db.js"></script>
+  <script src="i18n.js"></script>
   <script src="app.js"></script>
   <script src="todo.js"></script>
   <script src="assistant.js"></script>
